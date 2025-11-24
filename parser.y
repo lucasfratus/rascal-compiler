@@ -129,4 +129,20 @@ chamada_procedimento
 condicional
     : TK_IF expressao TK_THEN comando | TK_IF expressao TK_THEN comando TK_ELSE comando
     ;
+
+repeticao 
+    : TK_WHILE expressao TK_DO comando 
+    ;
+
+leitura
+    : TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR
+    ;
+
+escrita
+    : TK_ABREPAR lista_expressoes TK_FECHAPAR
+    ;
+
+lista_expressoes
+    : 
+    ;
 %%
