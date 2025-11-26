@@ -32,22 +32,22 @@ NUM     [0-9]+[0-9]*
 {NUM}               { yylval.ival = atoi(yytext); return NUM; }
 {ID}                { yylval.sval = strdup(yytext); return ID; }
 
-"("                 { return 'TK_ABREPAR'; }
-")"                 { return 'TK_FECHAPAR'; }
-";"                 { return 'TK_PTVG'; }
-":"                 { return 'TK_DOISPT'; }
-"."                 { return 'TK_PT'; }
-"="                 { return 'TK_IGUAL'; }
-"<>"                { return "TK_DIF"; }
-"<"                 { return "TK_MENOR"; }
-"<="                { return "TK_MENOR_IG"; }
-">"                 { return "TK_MAIOR"; }
-">="                { return "TK_MAIOR_IG"; }
-"+"                 { return 'TK_ADD'; }
-"-"                 { return 'TK_SUB'; }
-"*"                 { return 'TK_MUL'; }
-","                 { return 'TK_VG'; }
-":="                { return 'TK_ATRIB'; }
+"("                 { return TK_ABREPAR; }
+")"                 { return TK_FECHAPAR; }
+";"                 { return TK_PTVG; }
+":"                 { return TK_DOISPT; }
+"."                 { return TK_PT; }
+"="                 { return TK_IGUAL; }
+"<>"                { return TK_DIF; }
+"<"                 { return TK_MENOR; }
+"<="                { return TK_MENOR_IG; }
+">"                 { return TK_MAIOR; }
+">="                { return TK_MAIOR_IG; }
+"+"                 { return TK_ADD; }
+"-"                 { return TK_SUB; }
+"*"                 { return TK_MUL; }
+","                 { return TK_VG; }
+":="                { return TK_ATRIB; }
 
 {ESPACO}            { /* ignora */ }
 
