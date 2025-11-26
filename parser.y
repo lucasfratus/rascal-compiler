@@ -22,7 +22,7 @@ int yylex(void);
 
 %%
 programa
-    : TK_PROGRAM TK_ID TK_PTVG bloco TK_PT 
+    : TK_PROGRAM ID TK_PTVG bloco TK_PT 
     {
 
     }
@@ -47,7 +47,7 @@ secao_declaracao_variaveis
     ;
 
 lista_declaracao_variaveis
-    : declaracao_variaveis T_PTVG | lista_declaracao_variaveis declaracao_variaveis TK_PTVG
+    : declaracao_variaveis TK_PTVG | lista_declaracao_variaveis declaracao_variaveis TK_PTVG
     ;
 
 declaracao_variaveis
@@ -57,7 +57,7 @@ declaracao_variaveis
 
 lista_identificadores
     :
-    TK_ID | lista_identificadores TK_VG TK_ID
+    ID | lista_identificadores TK_VG ID
     ;
 
 tipo
@@ -77,9 +77,10 @@ lista_declaracao_subrotinas
 declaracao_subrotina
     :
     declaracao_procedimento TK_PTVG | declaracao_funcao TK_PTVG
+    ;
 
 declaracao_procedimento
-    : TK_PROCEDURE TK_ID possivel_parametros_formais TK_PTVG bloco_subrotina
+    : TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina
     ;
 
 possivel_parametros_formais
@@ -99,7 +100,7 @@ declaracao_parametros
     ;
 
 declaracao_funcao
-    : TK_FUNCTION TK_ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
+    : TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
     ;
 
 bloco_subrotina
@@ -119,11 +120,11 @@ comando
     ;
 
 atribuicao
-    : TK_ID TK_ATRIB expressao
+    : ID TK_ATRIB expressao
     ;
 
 chamada_procedimento
-    : TK_ID TK_ABREPAR lista_expressoes TK_FECHAPAR
+    : ID TK_ABREPAR lista_expressoes TK_FECHAPAR
     ;
 
 condicional
@@ -139,23 +140,19 @@ leitura
     ;
 
 escrita
-    : TK_ABREPAR lista_expressoes TK_FECHAPAR
+    : TK_WRITE TK_ABREPAR lista_expressoes TK_FECHAPAR
     ;
 
 lista_expressoes
-    : /* nada */ | expressao | lista_expressoes T_VIRGULA expressao
+    : /* nada */ | expressao | lista_expressoes TK_VG expressao
     ;
 
 expressao
-    : expressao_simples | possivel_relacao possivel_expressao_simples
+    : expressao_simples | expressao_simples relacao expressao_simples
     ;
 
 relacao
     : TK_IGUAL | TK_DIF | TK_MENOR | TK_MENOR_IG | TK_MAIOR | TK_MAIOR_IG
-    ;
-
-possivel_expressao_simples
-    : /* nada */ | expressao_simples
     ;
 
 expressao_simples
@@ -169,7 +166,7 @@ termo
 
 fator
     : variavel
-    | TK_INTEGER
+    | NUM
     | logico
     | chamada_funcao
     | TK_NOT fator
@@ -178,7 +175,7 @@ fator
     ;
 
 variavel
-    : TK_ID
+    : ID
     ;
 
 logico
@@ -186,7 +183,7 @@ logico
     ;
 
 chamada_funcao
-    : TK_ID TK_ABREPAR lista_expressoes TK_FECHAPAR
+    : ID TK_ABREPAR lista_expressoes TK_FECHAPAR
     ;
 
 %%
