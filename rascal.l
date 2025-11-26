@@ -1,6 +1,14 @@
 /* opções do flex */
 %option noyywrap yylineno
 
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+/* Inclui os tokens definidos no Bison */
+#include "rascal.tab.h" 
+%}
+
 ESPACO  [ \t\r\n]+
 ID      [a-zA-Z][a-zA-Z0-9_]*
 NUM     [0-9]+[0-9]*

@@ -187,3 +187,23 @@ chamada_funcao
     ;
 
 %%
+
+/* Função de tratamento de erro */
+void yyerror(const char *s) {
+    fprintf(stderr, "ERRO SINTÁTICO na linha %d: %s (próximo de '%s')\n", yylineno, s, yytext);
+}
+
+/* Função principal */
+int main(int argc, char **argv) {
+    if (argc > 1) {
+        FILE *file = fopen(argv[1], "r");
+        if (!file) {
+            fprintf(stderr, "Erro ao abrir arquivo %s\n", argv[1]);
+            return 1;
+        }
+        extern FILE* yyin;
+        yyin = file;
+    }
+    yyparse();
+    return 0;
+}
