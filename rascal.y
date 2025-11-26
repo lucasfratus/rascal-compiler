@@ -46,13 +46,12 @@ secao_declaracao_variaveis
     : TK_VAR lista_declaracao_variaveis
     ;
 
-lista_declaracao_variaveis
-    : declaracao_variaveis TK_PTVG | lista_declaracao_variaveis declaracao_variaveis TK_PTVG
+declaracao_tipada
+    : lista_identificadores TK_DOISPT tipo
     ;
 
-declaracao_variaveis
-    :
-    lista_identificadores TK_DOISPT tipo
+lista_declaracao_variaveis
+    : declaracao_tipada TK_PTVG | lista_declaracao_variaveis declaracao_tipada TK_PTVG
     ;
 
 lista_identificadores
@@ -69,6 +68,10 @@ possivel_secao_subrotinas
     /* nada */ | secao_declaracao_subrotinas
     ;
 
+secao_declaracao_subrotinas
+    : lista_declaracao_subrotinas
+    ;
+
 lista_declaracao_subrotinas
     :
     declaracao_subrotina TK_PTVG | lista_declaracao_subrotinas declaracao_subrotina TK_PTVG
@@ -76,7 +79,7 @@ lista_declaracao_subrotinas
 
 declaracao_subrotina
     :
-    declaracao_procedimento TK_PTVG | declaracao_funcao TK_PTVG
+    declaracao_procedimento | declaracao_funcao
     ;
 
 declaracao_procedimento
@@ -92,12 +95,9 @@ parametros_formais
     ;
 
 lista_declaracao_parametros
-    : declaracao_parametros | lista_declaracao_parametros TK_PTVG declaracao_parametros
+    : declaracao_tipada | lista_declaracao_parametros TK_PTVG declaracao_tipada
     ;
 
-declaracao_parametros
-    : lista_identificadores TK_DOISPT tipo
-    ;
 
 declaracao_funcao
     : TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
@@ -116,16 +116,13 @@ lista_comandos
     ;
 
 comando
-    : atribuicao | chamada_procedimento | condicional | repeticao | leitura | escrita | comando_composto
+    : atribuicao | chamada_geral | condicional | repeticao | leitura | escrita | comando_composto
     ;
 
 atribuicao
     : ID TK_ATRIB expressao
     ;
 
-chamada_procedimento
-    : ID TK_ABREPAR lista_expressoes TK_FECHAPAR
-    ;
 
 condicional
     : TK_IF expressao TK_THEN comando | TK_IF expressao TK_THEN comando TK_ELSE comando
@@ -168,7 +165,7 @@ fator
     : variavel
     | NUM
     | logico
-    | chamada_funcao
+    | chamada_geral
     | TK_NOT fator
     | TK_ABREPAR expressao TK_FECHAPAR
     | TK_SUB fator
@@ -182,9 +179,10 @@ logico
     : TK_FALSE | TK_TRUE 
     ;
 
-chamada_funcao
+chamada_geral
     : ID TK_ABREPAR lista_expressoes TK_FECHAPAR
     ;
+
 
 %%
 
