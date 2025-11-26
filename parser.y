@@ -143,6 +143,50 @@ escrita
     ;
 
 lista_expressoes
-    : 
+    : /* nada */ | expressao | lista_expressoes T_VIRGULA expressao
     ;
+
+expressao
+    : expressao_simples | possivel_relacao possivel_expressao_simples
+    ;
+
+relacao
+    : TK_IGUAL | TK_DIF | TK_MENOR | TK_MENOR_IG | TK_MAIOR | TK_MAIOR_IG
+    ;
+
+possivel_expressao_simples
+    : /* nada */ | expressao_simples
+    ;
+
+expressao_simples
+    : termo | TK_ADD termo | TK_SUB termo| expressao_simples TK_ADD termo | 
+    expressao_simples TK_SUB termo | expressao_simples TK_OR termo
+    ;
+
+termo
+    : fator | TK_MUL fator | TK_DIV fator | TK_AND fator   
+    ;
+
+fator
+    : variavel
+    | TK_INTEGER
+    | logico
+    | chamada_funcao
+    | TK_NOT fator
+    | TK_ABREPAR expressao TK_FECHAPAR
+    | TK_SUB fator
+    ;
+
+variavel
+    : TK_ID
+    ;
+
+logico
+    : TK_FALSE | TK_TRUE 
+    ;
+
+chamada_funcao
+    : TK_ID TK_ABREPAR lista_expressoes TK_FECHAPAR
+    ;
+
 %%
