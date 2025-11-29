@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 20 "rascal.y"
+
+    #include "ast.h"
+
+#line 53 "rascal.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -101,12 +107,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "rascal.y"
+#line 24 "rascal.y"
 
     int ival;
     char *sval;
+    No* node;
 
-#line 110 "rascal.tab.h"
+#line 117 "rascal.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

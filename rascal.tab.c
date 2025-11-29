@@ -73,7 +73,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "ast.h"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -83,8 +83,10 @@ void yyerror(const char *s);
 
 int yylex(void);
 
+No* raiz = NULL;
 
-#line 88 "rascal.tab.c"
+
+#line 90 "rascal.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -518,7 +520,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   124
+#define YYLAST   114
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  42
@@ -578,16 +580,16 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    39,    39,    46,    53,    53,    60,    64,    68,    68,
-      73,    73,    77,    77,    81,    82,    86,    91,    91,    96,
-      96,   100,   104,   104,   108,   112,   112,   117,   121,   125,
-     129,   129,   133,   133,   133,   133,   133,   133,   133,   137,
-     142,   142,   146,   150,   154,   158,   159,   163,   164,   168,
-     168,   172,   172,   172,   172,   172,   172,   176,   176,   176,
-     176,   177,   177,   181,   181,   181,   181,   185,   186,   187,
-     188,   189,   190,   194,   198,   198,   202
+       0,    56,    56,    64,    74,    75,    79,    86,    94,    98,
+     106,   110,   117,   118,   123,   124,   128,   133,   137,   146,
+     147,   151,   159,   160,   164,   168,   172,   180,   189,   197,
+     201,   205,   212,   213,   214,   215,   216,   217,   218,   222,
+     231,   236,   245,   253,   260,   267,   271,   278,   279,   283,
+     284,   292,   293,   294,   295,   296,   297,   301,   302,   305,
+     309,   314,   319,   327,   328,   333,   338,   346,   347,   348,
+     349,   350,   354,   358,   362,   363,   367
 };
 #endif
 
@@ -632,7 +634,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-81)
+#define YYPACT_NINF (-78)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -646,20 +648,20 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      12,    23,    37,    13,   -81,    43,    49,    16,     4,   -81,
-     -81,    35,    49,   -24,   -81,    61,    62,    57,   -81,     4,
-      40,   -81,   -81,   -81,    44,    32,    72,    50,    50,    74,
-     -81,    58,   -81,   -81,   -81,   -81,   -81,   -81,    49,    59,
-     -81,    46,    24,    45,    45,    66,    82,   -81,    11,   -81,
-     -81,   -81,   -81,   -81,   -81,   -81,   -81,   -81,    33,    43,
-      32,    45,    45,    83,   -81,   -81,   -81,     5,     5,     5,
-      45,    10,    10,     5,    77,    67,   -81,   -81,   -81,   -81,
-     -81,    70,    49,    45,   -81,    74,   -81,    49,    57,   -81,
-      84,    73,    87,   -81,   -81,   -81,   -81,   -81,    88,   -81,
-     -81,   -81,    74,    10,   -81,   -81,   -81,   -81,   -81,   -81,
-      10,    10,    45,    74,   -15,     0,   -81,   -81,   -81,    43,
-      45,   -81,   -81,   -81,   -81,   -81,   -81,    19,    91,   -81,
-     -81,   -81,   -81,    74,   -81
+       4,    22,    39,    13,   -78,    36,    51,    31,    59,   -78,
+     -78,    45,    51,   -25,   -78,    71,    75,    70,   -78,    59,
+      52,   -78,   -78,   -78,    63,    49,    79,    66,    66,    42,
+     -78,    65,   -78,   -78,   -78,   -78,   -78,   -78,    51,    67,
+     -78,    55,    26,    14,    14,    72,    73,   -78,     3,   -78,
+     -78,   -78,   -78,   -78,   -78,   -78,   -78,   -78,    41,    36,
+      49,    14,    14,    74,   -78,   -78,   -78,     8,    14,     8,
+       8,    80,    54,    33,   -78,   -78,   -78,   -78,    83,    51,
+      14,   -78,    42,   -78,    51,    70,   -78,    69,    62,    76,
+     -78,   -78,   -78,    78,    33,    33,    42,     8,   -78,   -78,
+     -78,   -78,   -78,   -78,     8,     8,    14,     8,     8,     8,
+      42,   -17,   -11,   -78,   -78,   -78,    36,    14,   -78,   -78,
+     -78,    33,    33,    33,     1,   -78,   -78,   -78,    87,   -78,
+     -78,   -78,   -78,    42,   -78
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -674,31 +676,31 @@ static const yytype_int8 yydefact[] =
       23,     0,     0,     0,     0,     0,     0,    38,     0,    30,
       32,    34,    35,    36,    37,    33,    18,    25,     0,     4,
        0,    47,     0,    73,    68,    74,    75,     0,     0,     0,
-       0,     0,     0,     0,     0,    49,    57,    63,    67,    69,
-      70,     0,     0,     0,    29,     0,    24,     0,     0,    21,
-       0,    48,     0,    45,    39,    66,    71,    65,     0,    58,
-      59,    64,     0,     0,    51,    52,    53,    54,    55,    56,
-       0,     0,     0,     0,     0,     0,    31,    26,    28,     4,
-       0,    76,    72,    42,    62,    60,    61,    50,    40,    43,
+       0,     0,    49,    57,    63,    67,    69,    70,     0,     0,
+       0,    29,     0,    24,     0,     0,    21,     0,    48,     0,
+      45,    39,    71,     0,    58,    59,     0,     0,    51,    52,
+      53,    54,    55,    56,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    31,    26,    28,     4,     0,    76,    72,
+      42,    62,    60,    61,    50,    66,    65,    64,    40,    43,
       44,    27,    46,     0,    41
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -81,   -81,   -81,   111,   -81,    -8,   -81,    36,    60,   -81,
-     -81,   -81,    98,   -81,    93,   -81,   -81,   -81,     3,   -14,
-     -81,   -80,   -81,   -81,   -81,   -81,   -81,    41,   -81,   -42,
-     -81,     7,   -65,    38,   -81,   -81,   -29
+     -78,   -78,   -78,   102,   -78,    -8,   -78,    29,    50,   -78,
+     -78,   -78,    90,   -78,    84,   -78,   -78,   -78,    -5,   -14,
+     -78,   -77,   -78,   -78,   -78,   -78,   -78,    34,   -78,   -42,
+     -78,     7,   -62,   -61,   -78,   -78,   -29
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     7,    88,     9,    11,    12,    13,    36,    17,
-      18,    19,    20,    21,    39,    40,    58,    22,    89,    47,
-      48,    49,    50,    51,    52,    53,    54,    91,    92,    93,
-     112,    75,    76,    77,    78,    79,    80
+       0,     2,     7,    85,     9,    11,    12,    13,    36,    17,
+      18,    19,    20,    21,    39,    40,    58,    22,    86,    47,
+      48,    49,    50,    51,    52,    53,    54,    88,    89,    90,
+     106,    72,    73,    74,    75,    76,    77
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -706,36 +708,34 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      55,    74,    81,    30,    24,   116,    99,   100,    63,    64,
-      15,    16,   129,    63,    64,    25,    26,     1,    65,    66,
-      94,    84,   123,    65,    66,    26,     3,   130,    98,    68,
-      57,    70,    67,   128,    68,    69,    70,     4,   124,    85,
-     120,     5,   103,    34,    35,   125,   126,    73,    63,    64,
-      61,     6,    10,   134,   110,   111,    55,    14,    65,    66,
-      86,    87,    62,    23,    27,    28,    29,    67,    32,    68,
-      69,    70,    33,    55,   118,    37,    38,    42,   132,   117,
-      71,    72,    73,    29,    55,    60,    56,    59,   113,    43,
-     103,    44,    82,   102,    45,    46,   104,   105,   106,   107,
-     108,   109,   110,   111,    55,    95,    96,    97,    83,    61,
-     133,   101,   119,   120,   121,   122,     8,    31,   114,   127,
-      90,    41,   131,     0,   115
+      55,    71,    78,    30,    24,   113,    92,    94,    95,     1,
+     129,    63,    64,    81,    25,    26,   130,    63,    64,   120,
+      91,    65,    66,    26,    97,     3,    93,    65,    66,   117,
+      57,    82,    67,   128,    68,   121,   104,   105,    67,     4,
+      68,     5,   122,   123,     6,    42,   125,   126,   127,    69,
+      70,    29,    61,    55,    10,   107,   134,    43,   108,    44,
+      34,    35,    45,    46,    62,    15,    16,    55,    83,    84,
+     109,   115,    14,    23,    27,   132,   114,    97,    28,    29,
+      32,    55,    37,    98,    99,   100,   101,   102,   103,   104,
+     105,    33,    38,    56,    60,    59,    96,   116,    79,    80,
+      61,   110,   117,   118,    55,   119,   133,     8,   111,    31,
+      87,   131,    41,   124,   112
 };
 
-static const yytype_int16 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      29,    43,    44,    17,    12,    85,    71,    72,     3,     4,
-       6,     7,    27,     3,     4,    39,    40,     5,    13,    14,
-      62,    10,   102,    13,    14,    40,     3,    27,    70,    24,
-      38,    26,    22,   113,    24,    25,    26,     0,   103,    28,
-      40,    28,    23,    11,    12,   110,   111,    37,     3,     4,
-      26,     8,     3,   133,    35,    36,    85,    41,    13,    14,
-      27,    28,    38,    28,     3,     3,     9,    22,    28,    24,
-      25,    26,    28,   102,    88,     3,    26,     3,   120,    87,
-      35,    36,    37,     9,   113,    39,    28,    28,    18,    15,
-      23,    17,    26,    16,    20,    21,    29,    30,    31,    32,
-      33,    34,    35,    36,   133,    67,    68,    69,    26,    26,
-      19,    73,    28,    40,    27,    27,     5,    19,    82,   112,
-      60,    28,   119,    -1,    83
+      29,    43,    44,    17,    12,    82,    67,    69,    70,     5,
+      27,     3,     4,    10,    39,    40,    27,     3,     4,    96,
+      62,    13,    14,    40,    23,     3,    68,    13,    14,    40,
+      38,    28,    24,   110,    26,    97,    35,    36,    24,     0,
+      26,    28,   104,   105,     8,     3,   107,   108,   109,    35,
+      36,     9,    26,    82,     3,    22,   133,    15,    25,    17,
+      11,    12,    20,    21,    38,     6,     7,    96,    27,    28,
+      37,    85,    41,    28,     3,   117,    84,    23,     3,     9,
+      28,   110,     3,    29,    30,    31,    32,    33,    34,    35,
+      36,    28,    26,    28,    39,    28,    16,    28,    26,    26,
+      26,    18,    40,    27,   133,    27,    19,     5,    79,    19,
+      60,   116,    28,   106,    80
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -748,13 +748,13 @@ static const yytype_int8 yystos[] =
       61,    54,    28,    28,    11,    12,    50,     3,    26,    56,
       57,    56,     3,    15,    17,    20,    21,    61,    62,    63,
       64,    65,    66,    67,    68,    78,    28,    47,    58,    28,
-      39,    26,    38,     3,     4,    13,    14,    22,    24,    25,
-      26,    35,    36,    37,    71,    73,    74,    75,    76,    77,
-      78,    71,    26,    26,    10,    28,    27,    28,    45,    60,
-      50,    69,    70,    71,    71,    75,    75,    75,    71,    74,
-      74,    75,    16,    23,    29,    30,    31,    32,    33,    34,
-      35,    36,    72,    18,    49,    69,    63,    47,    61,    28,
-      40,    27,    27,    63,    74,    74,    74,    73,    63,    27,
+      39,    26,    38,     3,     4,    13,    14,    24,    26,    35,
+      36,    71,    73,    74,    75,    76,    77,    78,    71,    26,
+      26,    10,    28,    27,    28,    45,    60,    50,    69,    70,
+      71,    71,    75,    71,    74,    74,    16,    23,    29,    30,
+      31,    32,    33,    34,    35,    36,    72,    22,    25,    37,
+      18,    49,    69,    63,    47,    61,    28,    40,    27,    27,
+      63,    74,    74,    74,    73,    75,    75,    75,    63,    27,
       27,    60,    71,    19,    63
 };
 
@@ -780,7 +780,7 @@ static const yytype_int8 yyr2[] =
        1,     3,     1,     1,     1,     1,     1,     1,     1,     3,
        4,     6,     4,     4,     4,     1,     3,     0,     1,     1,
        3,     1,     1,     1,     1,     1,     1,     1,     2,     2,
-       3,     3,     3,     1,     2,     2,     2,     1,     1,     1,
+       3,     3,     3,     1,     3,     3,     3,     1,     1,     1,
        1,     2,     3,     1,     1,     1,     4
 };
 
@@ -1245,31 +1245,582 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* programa: TK_PROGRAM ID TK_PTVG bloco TK_PT  */
-#line 40 "rascal.y"
+#line 57 "rascal.y"
     {
-
+        raiz = new No(NO_PROGRAMA, (yyvsp[-3].sval));
+        raiz->addFilho((yyvsp[-1].node));
     }
-#line 1253 "rascal.tab.c"
+#line 1254 "rascal.tab.c"
     break;
 
   case 3: /* bloco: possivel_secao_variaveis possivel_secao_subrotinas comando_composto  */
-#line 47 "rascal.y"
+#line 65 "rascal.y"
     {
-
+        (yyval.node) = new No(NO_BLOCO);
+        if((yyvsp[-2].node)) (yyval.node)->addFilho((yyvsp[-2].node));
+        if((yyvsp[-1].node)) (yyval.node)->addFilho((yyvsp[-1].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
     }
-#line 1261 "rascal.tab.c"
+#line 1265 "rascal.tab.c"
+    break;
+
+  case 4: /* possivel_secao_variaveis: %empty  */
+#line 74 "rascal.y"
+                 { (yyval.node) = NULL; }
+#line 1271 "rascal.tab.c"
     break;
 
   case 5: /* possivel_secao_variaveis: secao_declaracao_variaveis  */
-#line 54 "rascal.y"
-    {
+#line 75 "rascal.y"
+                                 { (yyval.node) = (yyvsp[0].node); }
+#line 1277 "rascal.tab.c"
+    break;
 
+  case 6: /* secao_declaracao_variaveis: TK_VAR lista_declaracao_variaveis  */
+#line 80 "rascal.y"
+    {
+        (yyval.node) = (yyvsp[0].node);
     }
-#line 1269 "rascal.tab.c"
+#line 1285 "rascal.tab.c"
+    break;
+
+  case 7: /* declaracao_tipada: lista_identificadores TK_DOISPT tipo  */
+#line 86 "rascal.y"
+                                           {
+        (yyval.node) = new No(NO_VAR_DECL, "grupo");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1295 "rascal.tab.c"
+    break;
+
+  case 8: /* lista_declaracao_variaveis: declaracao_tipada TK_PTVG  */
+#line 94 "rascal.y"
+                                {
+        (yyval.node) = new No(NO_VAR_DECL); 
+        (yyval.node)->addFilho((yyvsp[-1].node)); 
+    }
+#line 1304 "rascal.tab.c"
+    break;
+
+  case 9: /* lista_declaracao_variaveis: lista_declaracao_variaveis declaracao_tipada TK_PTVG  */
+#line 98 "rascal.y"
+                                                           {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1313 "rascal.tab.c"
+    break;
+
+  case 10: /* lista_identificadores: ID  */
+#line 106 "rascal.y"
+       {
+        (yyval.node) = new No(NO_ID, "LISTA_IDS");
+        (yyval.node)->addFilho(new No(NO_ID, (yyvsp[0].sval)));
+    }
+#line 1322 "rascal.tab.c"
+    break;
+
+  case 11: /* lista_identificadores: lista_identificadores TK_VG ID  */
+#line 110 "rascal.y"
+                                     {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho(new No(NO_ID, (yyvsp[0].sval)));
+    }
+#line 1331 "rascal.tab.c"
+    break;
+
+  case 12: /* tipo: TK_BOOLEAN  */
+#line 117 "rascal.y"
+                 { (yyval.node) = new No(NO_TIPO, "boolean"); }
+#line 1337 "rascal.tab.c"
+    break;
+
+  case 13: /* tipo: TK_INTEGER  */
+#line 118 "rascal.y"
+                 { (yyval.node) = new No(NO_TIPO, "integer"); }
+#line 1343 "rascal.tab.c"
+    break;
+
+  case 14: /* possivel_secao_subrotinas: %empty  */
+#line 123 "rascal.y"
+               { (yyval.node) = NULL; }
+#line 1349 "rascal.tab.c"
+    break;
+
+  case 15: /* possivel_secao_subrotinas: secao_declaracao_subrotinas  */
+#line 124 "rascal.y"
+                                  { (yyval.node) = (yyvsp[0].node); }
+#line 1355 "rascal.tab.c"
+    break;
+
+  case 16: /* secao_declaracao_subrotinas: lista_declaracao_subrotinas  */
+#line 128 "rascal.y"
+                                  { (yyval.node) = (yyvsp[0].node); }
+#line 1361 "rascal.tab.c"
+    break;
+
+  case 17: /* lista_declaracao_subrotinas: declaracao_subrotina TK_PTVG  */
+#line 133 "rascal.y"
+                                 {
+        (yyval.node) = new No(NO_SUBROTINA, "LISTA_SUBROTINAS");
+        (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1370 "rascal.tab.c"
+    break;
+
+  case 18: /* lista_declaracao_subrotinas: lista_declaracao_subrotinas declaracao_subrotina TK_PTVG  */
+#line 138 "rascal.y"
+    {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1379 "rascal.tab.c"
+    break;
+
+  case 19: /* declaracao_subrotina: declaracao_procedimento  */
+#line 146 "rascal.y"
+                            { (yyval.node) = (yyvsp[0].node); }
+#line 1385 "rascal.tab.c"
+    break;
+
+  case 20: /* declaracao_subrotina: declaracao_funcao  */
+#line 147 "rascal.y"
+                        { (yyval.node) = (yyvsp[0].node); }
+#line 1391 "rascal.tab.c"
+    break;
+
+  case 21: /* declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina  */
+#line 151 "rascal.y"
+                                                                          {
+        (yyval.node) = new No(NO_SUBROTINA, (yyvsp[-3].sval));
+        if((yyvsp[-2].node)) (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1401 "rascal.tab.c"
+    break;
+
+  case 22: /* possivel_parametros_formais: %empty  */
+#line 159 "rascal.y"
+                 { (yyval.node) = NULL; }
+#line 1407 "rascal.tab.c"
+    break;
+
+  case 23: /* possivel_parametros_formais: parametros_formais  */
+#line 160 "rascal.y"
+                         { (yyval.node) = (yyvsp[0].node); }
+#line 1413 "rascal.tab.c"
+    break;
+
+  case 24: /* parametros_formais: TK_ABREPAR lista_declaracao_parametros TK_FECHAPAR  */
+#line 164 "rascal.y"
+                                                         { (yyval.node) = (yyvsp[-1].node); }
+#line 1419 "rascal.tab.c"
+    break;
+
+  case 25: /* lista_declaracao_parametros: declaracao_tipada  */
+#line 168 "rascal.y"
+                        { 
+        (yyval.node) = new No(NO_PARAM_LIST, "PARAMETROS");
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1428 "rascal.tab.c"
+    break;
+
+  case 26: /* lista_declaracao_parametros: lista_declaracao_parametros TK_PTVG declaracao_tipada  */
+#line 172 "rascal.y"
+                                                            {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1437 "rascal.tab.c"
+    break;
+
+  case 27: /* declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina  */
+#line 180 "rascal.y"
+                                                                                        {
+        (yyval.node) = new No(NO_SUBROTINA, (yyvsp[-5].sval));
+        if((yyvsp[-4].node)) (yyval.node)->addFilho((yyvsp[-4].node));
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1448 "rascal.tab.c"
+    break;
+
+  case 28: /* bloco_subrotina: possivel_secao_variaveis comando_composto  */
+#line 189 "rascal.y"
+                                                {
+        (yyval.node) = new No(NO_BLOCO);
+        if((yyvsp[-1].node)) (yyval.node)->addFilho((yyvsp[-1].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1458 "rascal.tab.c"
+    break;
+
+  case 29: /* comando_composto: TK_BEGIN lista_comandos TK_END  */
+#line 197 "rascal.y"
+                                     { (yyval.node) = (yyvsp[-1].node); }
+#line 1464 "rascal.tab.c"
+    break;
+
+  case 30: /* lista_comandos: comando  */
+#line 201 "rascal.y"
+              {
+        (yyval.node) = new No(NO_BEGINEND, "BLOCO_COMANDOS");
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1473 "rascal.tab.c"
+    break;
+
+  case 31: /* lista_comandos: lista_comandos TK_PTVG comando  */
+#line 205 "rascal.y"
+                                     {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1482 "rascal.tab.c"
+    break;
+
+  case 32: /* comando: atribuicao  */
+#line 212 "rascal.y"
+                 { (yyval.node) = (yyvsp[0].node); }
+#line 1488 "rascal.tab.c"
+    break;
+
+  case 33: /* comando: chamada_geral  */
+#line 213 "rascal.y"
+                    { (yyval.node) = (yyvsp[0].node); }
+#line 1494 "rascal.tab.c"
+    break;
+
+  case 34: /* comando: condicional  */
+#line 214 "rascal.y"
+                  { (yyval.node) = (yyvsp[0].node); }
+#line 1500 "rascal.tab.c"
+    break;
+
+  case 35: /* comando: repeticao  */
+#line 215 "rascal.y"
+                { (yyval.node) = (yyvsp[0].node); }
+#line 1506 "rascal.tab.c"
+    break;
+
+  case 36: /* comando: leitura  */
+#line 216 "rascal.y"
+              { (yyval.node) = (yyvsp[0].node); }
+#line 1512 "rascal.tab.c"
+    break;
+
+  case 37: /* comando: escrita  */
+#line 217 "rascal.y"
+              { (yyval.node) = (yyvsp[0].node); }
+#line 1518 "rascal.tab.c"
+    break;
+
+  case 38: /* comando: comando_composto  */
+#line 218 "rascal.y"
+                       { (yyval.node) = (yyvsp[0].node); }
+#line 1524 "rascal.tab.c"
+    break;
+
+  case 39: /* atribuicao: ID TK_ATRIB expressao  */
+#line 222 "rascal.y"
+                            {
+        (yyval.node) = new No(NO_ATRIB);
+        (yyval.node)->addFilho(new No(NO_ID, (yyvsp[-2].sval)));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1534 "rascal.tab.c"
+    break;
+
+  case 40: /* condicional: TK_IF expressao TK_THEN comando  */
+#line 231 "rascal.y"
+                                      {
+        (yyval.node) = new No(NO_IF);
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1544 "rascal.tab.c"
+    break;
+
+  case 41: /* condicional: TK_IF expressao TK_THEN comando TK_ELSE comando  */
+#line 236 "rascal.y"
+                                                      {
+        (yyval.node) = new No(NO_IF);
+        (yyval.node)->addFilho((yyvsp[-4].node));
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1555 "rascal.tab.c"
+    break;
+
+  case 42: /* repeticao: TK_WHILE expressao TK_DO comando  */
+#line 245 "rascal.y"
+                                       {
+        (yyval.node) = new No(NO_WHILE);
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1565 "rascal.tab.c"
+    break;
+
+  case 43: /* leitura: TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR  */
+#line 253 "rascal.y"
+                                                           {
+        (yyval.node) = new No(NO_READ);
+        (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1574 "rascal.tab.c"
+    break;
+
+  case 44: /* escrita: TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR  */
+#line 260 "rascal.y"
+                                                                 {
+        (yyval.node) = new No(NO_WRITE);
+        (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1583 "rascal.tab.c"
+    break;
+
+  case 45: /* lista_expressoes_nao_vazia: expressao  */
+#line 267 "rascal.y"
+                {
+        (yyval.node) = new No(NO_PARAM_LIST, "LISTA_EXP");
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1592 "rascal.tab.c"
+    break;
+
+  case 46: /* lista_expressoes_nao_vazia: lista_expressoes_nao_vazia TK_VG expressao  */
+#line 271 "rascal.y"
+                                                 {
+        (yyval.node) = (yyvsp[-2].node);
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1601 "rascal.tab.c"
+    break;
+
+  case 47: /* lista_expressoes: %empty  */
+#line 278 "rascal.y"
+                 { (yyval.node) = NULL; }
+#line 1607 "rascal.tab.c"
+    break;
+
+  case 48: /* lista_expressoes: lista_expressoes_nao_vazia  */
+#line 279 "rascal.y"
+                                 { (yyval.node) = (yyvsp[0].node); }
+#line 1613 "rascal.tab.c"
+    break;
+
+  case 49: /* expressao: expressao_simples  */
+#line 283 "rascal.y"
+                        { (yyval.node) = (yyvsp[0].node); }
+#line 1619 "rascal.tab.c"
+    break;
+
+  case 50: /* expressao: expressao_simples relacao expressao_simples  */
+#line 284 "rascal.y"
+                                                  {
+        (yyval.node) = (yyvsp[-1].node);
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1629 "rascal.tab.c"
+    break;
+
+  case 51: /* relacao: TK_IGUAL  */
+#line 292 "rascal.y"
+               { (yyval.node) = new No(NO_OP_BINARIA, "="); }
+#line 1635 "rascal.tab.c"
+    break;
+
+  case 52: /* relacao: TK_DIF  */
+#line 293 "rascal.y"
+             { (yyval.node) = new No(NO_OP_BINARIA, "<>"); }
+#line 1641 "rascal.tab.c"
+    break;
+
+  case 53: /* relacao: TK_MENOR  */
+#line 294 "rascal.y"
+               { (yyval.node) = new No(NO_OP_BINARIA, "<"); }
+#line 1647 "rascal.tab.c"
+    break;
+
+  case 54: /* relacao: TK_MENOR_IG  */
+#line 295 "rascal.y"
+                  { (yyval.node) = new No(NO_OP_BINARIA, "<="); }
+#line 1653 "rascal.tab.c"
+    break;
+
+  case 55: /* relacao: TK_MAIOR  */
+#line 296 "rascal.y"
+               { (yyval.node) = new No(NO_OP_BINARIA, ">"); }
+#line 1659 "rascal.tab.c"
+    break;
+
+  case 56: /* relacao: TK_MAIOR_IG  */
+#line 297 "rascal.y"
+                  { (yyval.node) = new No(NO_OP_BINARIA, ">="); }
+#line 1665 "rascal.tab.c"
+    break;
+
+  case 57: /* expressao_simples: termo  */
+#line 301 "rascal.y"
+            { (yyval.node) = (yyvsp[0].node); }
+#line 1671 "rascal.tab.c"
+    break;
+
+  case 58: /* expressao_simples: TK_ADD termo  */
+#line 302 "rascal.y"
+                   {
+        (yyval.node) = (yyvsp[0].node); 
+    }
+#line 1679 "rascal.tab.c"
+    break;
+
+  case 59: /* expressao_simples: TK_SUB termo  */
+#line 305 "rascal.y"
+                   { 
+        (yyval.node) = new No(NO_OP_UNARIA, "-");
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1688 "rascal.tab.c"
+    break;
+
+  case 60: /* expressao_simples: expressao_simples TK_ADD termo  */
+#line 309 "rascal.y"
+                                     {
+        (yyval.node) = new No(NO_OP_BINARIA, "+");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1698 "rascal.tab.c"
+    break;
+
+  case 61: /* expressao_simples: expressao_simples TK_SUB termo  */
+#line 314 "rascal.y"
+                                     {
+        (yyval.node) = new No(NO_OP_BINARIA, "-");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1708 "rascal.tab.c"
+    break;
+
+  case 62: /* expressao_simples: expressao_simples TK_OR termo  */
+#line 319 "rascal.y"
+                                    {
+        (yyval.node) = new No(NO_OP_BINARIA, "or");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1718 "rascal.tab.c"
+    break;
+
+  case 63: /* termo: fator  */
+#line 327 "rascal.y"
+            { (yyval.node) = (yyvsp[0].node); }
+#line 1724 "rascal.tab.c"
+    break;
+
+  case 64: /* termo: termo TK_MUL fator  */
+#line 328 "rascal.y"
+                         {
+        (yyval.node) = new No(NO_OP_BINARIA, "*");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1734 "rascal.tab.c"
+    break;
+
+  case 65: /* termo: termo TK_DIV fator  */
+#line 333 "rascal.y"
+                         {
+        (yyval.node) = new No(NO_OP_BINARIA, "div");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1744 "rascal.tab.c"
+    break;
+
+  case 66: /* termo: termo TK_AND fator  */
+#line 338 "rascal.y"
+                         {
+        (yyval.node) = new No(NO_OP_BINARIA, "and");
+        (yyval.node)->addFilho((yyvsp[-2].node));
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1754 "rascal.tab.c"
+    break;
+
+  case 67: /* fator: variavel  */
+#line 346 "rascal.y"
+               { (yyval.node) = (yyvsp[0].node); }
+#line 1760 "rascal.tab.c"
+    break;
+
+  case 68: /* fator: NUM  */
+#line 347 "rascal.y"
+          { (yyval.node) = new No(NO_INT, std::to_string((yyvsp[0].ival))); }
+#line 1766 "rascal.tab.c"
+    break;
+
+  case 69: /* fator: logico  */
+#line 348 "rascal.y"
+             { (yyval.node) = (yyvsp[0].node); }
+#line 1772 "rascal.tab.c"
+    break;
+
+  case 70: /* fator: chamada_geral  */
+#line 349 "rascal.y"
+                    { (yyval.node) = (yyvsp[0].node); }
+#line 1778 "rascal.tab.c"
+    break;
+
+  case 71: /* fator: TK_NOT fator  */
+#line 350 "rascal.y"
+                   {
+        (yyval.node) = new No(NO_OP_UNARIA, "not");
+        (yyval.node)->addFilho((yyvsp[0].node));
+    }
+#line 1787 "rascal.tab.c"
+    break;
+
+  case 72: /* fator: TK_ABREPAR expressao TK_FECHAPAR  */
+#line 354 "rascal.y"
+                                       { (yyval.node) = (yyvsp[-1].node); }
+#line 1793 "rascal.tab.c"
+    break;
+
+  case 73: /* variavel: ID  */
+#line 358 "rascal.y"
+         { (yyval.node) = new No(NO_ID, (yyvsp[0].sval)); }
+#line 1799 "rascal.tab.c"
+    break;
+
+  case 74: /* logico: TK_FALSE  */
+#line 362 "rascal.y"
+               { (yyval.node) = new No(NO_BOOL, "false"); }
+#line 1805 "rascal.tab.c"
+    break;
+
+  case 75: /* logico: TK_TRUE  */
+#line 363 "rascal.y"
+              { (yyval.node) = new No(NO_BOOL, "true"); }
+#line 1811 "rascal.tab.c"
+    break;
+
+  case 76: /* chamada_geral: ID TK_ABREPAR lista_expressoes TK_FECHAPAR  */
+#line 367 "rascal.y"
+                                                 {
+        (yyval.node) = new No(NO_CHAMADA, (yyvsp[-3].sval));
+        if((yyvsp[-1].node)) (yyval.node)->addFilho((yyvsp[-1].node));
+    }
+#line 1820 "rascal.tab.c"
     break;
 
 
-#line 1273 "rascal.tab.c"
+#line 1824 "rascal.tab.c"
 
       default: break;
     }
@@ -1462,7 +2013,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 206 "rascal.y"
+#line 374 "rascal.y"
 
 
 /* Função de tratamento de erro */
@@ -1482,5 +2033,13 @@ int main(int argc, char **argv) {
         yyin = file;
     }
     yyparse();
+
+    /* Se a raiz foi gerada sem erros, imprime a arvere */
+    if (raiz) {
+        std::cout << "--- AST ---" << std::endl;
+        raiz->print();
+        delete raiz; 
+    }
+
     return 0;
 }
