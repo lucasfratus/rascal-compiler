@@ -1,0 +1,1671 @@
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: TK_PROGRAM ID TK_PTVG bloco TK_PT
+
+    2 bloco: possivel_secao_variaveis possivel_secao_subrotinas comando_composto
+
+    3 possivel_secao_variaveis: ε
+    4                         | secao_declaracao_variaveis
+
+    5 secao_declaracao_variaveis: TK_VAR lista_declaracao_variaveis
+
+    6 declaracao_tipada: lista_identificadores TK_DOISPT tipo
+
+    7 lista_declaracao_variaveis: declaracao_tipada TK_PTVG
+    8                           | lista_declaracao_variaveis declaracao_tipada TK_PTVG
+
+    9 lista_identificadores: ID
+   10                      | lista_identificadores TK_VG ID
+
+   11 tipo: TK_BOOLEAN
+   12     | TK_INTEGER
+
+   13 possivel_secao_subrotinas: ε
+   14                          | secao_declaracao_subrotinas
+
+   15 secao_declaracao_subrotinas: lista_declaracao_subrotinas
+
+   16 lista_declaracao_subrotinas: declaracao_subrotina TK_PTVG
+   17                            | lista_declaracao_subrotinas declaracao_subrotina TK_PTVG
+
+   18 declaracao_subrotina: declaracao_procedimento
+   19                     | declaracao_funcao
+
+   20 declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina
+
+   21 possivel_parametros_formais: ε
+   22                            | parametros_formais
+
+   23 parametros_formais: TK_ABREPAR lista_declaracao_parametros TK_FECHAPAR
+
+   24 lista_declaracao_parametros: declaracao_tipada
+   25                            | lista_declaracao_parametros TK_PTVG declaracao_tipada
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
+
+   27 bloco_subrotina: possivel_secao_variaveis comando_composto
+
+   28 comando_composto: TK_BEGIN lista_comandos TK_END
+
+   29 lista_comandos: comando
+   30               | lista_comandos TK_PTVG comando
+
+   31 comando: atribuicao
+   32        | chamada_geral
+   33        | condicional
+   34        | repeticao
+   35        | leitura
+   36        | escrita
+   37        | comando_composto
+
+   38 atribuicao: ID TK_ATRIB expressao
+
+   39 condicional: TK_IF expressao TK_THEN comando
+   40            | TK_IF expressao TK_THEN comando TK_ELSE comando
+
+   41 repeticao: TK_WHILE expressao TK_DO comando
+
+   42 leitura: TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR
+
+   43 escrita: TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR
+
+   44 lista_expressoes_nao_vazia: expressao
+   45                           | lista_expressoes_nao_vazia TK_VG expressao
+
+   46 lista_expressoes: ε
+   47                 | lista_expressoes_nao_vazia
+
+   48 expressao: expressao_simples
+   49          | expressao_simples relacao expressao_simples
+
+   50 relacao: TK_IGUAL
+   51        | TK_DIF
+   52        | TK_MENOR
+   53        | TK_MENOR_IG
+   54        | TK_MAIOR
+   55        | TK_MAIOR_IG
+
+   56 expressao_simples: termo
+   57                  | TK_ADD termo
+   58                  | TK_SUB termo
+   59                  | expressao_simples TK_ADD termo
+   60                  | expressao_simples TK_SUB termo
+   61                  | expressao_simples TK_OR termo
+
+   62 termo: fator
+   63      | TK_MUL fator
+   64      | TK_DIV fator
+   65      | TK_AND fator
+
+   66 fator: variavel
+   67      | NUM
+   68      | logico
+   69      | chamada_geral
+   70      | TK_NOT fator
+   71      | TK_ABREPAR expressao TK_FECHAPAR
+
+   72 variavel: ID
+
+   73 logico: TK_FALSE
+   74       | TK_TRUE
+
+   75 chamada_geral: ID TK_ABREPAR lista_expressoes TK_FECHAPAR
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    ID <sval> (258) 1 9 10 20 26 38 72 75
+    NUM <ival> (259) 67
+    TK_PROGRAM (260) 1
+    TK_PROCEDURE (261) 20
+    TK_FUNCTION (262) 26
+    TK_VAR (263) 5
+    TK_BEGIN (264) 28
+    TK_END (265) 28
+    TK_INTEGER (266) 12
+    TK_BOOLEAN (267) 11
+    TK_FALSE (268) 73
+    TK_TRUE (269) 74
+    TK_WHILE (270) 41
+    TK_DO (271) 41
+    TK_IF (272) 39 40
+    TK_THEN (273) 39 40
+    TK_ELSE (274) 40
+    TK_READ (275) 42
+    TK_WRITE (276) 43
+    TK_AND (277) 65
+    TK_OR (278) 61
+    TK_NOT (279) 70
+    TK_DIV (280) 64
+    TK_ABREPAR (281) 23 42 43 71 75
+    TK_FECHAPAR (282) 23 42 43 71 75
+    TK_PTVG (283) 1 7 8 16 17 20 25 26 30
+    TK_IGUAL (284) 50
+    TK_DIF (285) 51
+    TK_MENOR (286) 52
+    TK_MENOR_IG (287) 53
+    TK_MAIOR (288) 54
+    TK_MAIOR_IG (289) 55
+    TK_ADD (290) 57 59
+    TK_SUB (291) 58 60
+    TK_MUL (292) 63
+    TK_ATRIB (293) 38
+    TK_DOISPT (294) 6 26
+    TK_VG (295) 10 45
+    TK_PT (296) 1
+
+
+Nonterminals, with rules where they appear
+
+    $accept (42)
+        on left: 0
+    programa (43)
+        on left: 1
+        on right: 0
+    bloco (44)
+        on left: 2
+        on right: 1
+    possivel_secao_variaveis (45)
+        on left: 3 4
+        on right: 2 27
+    secao_declaracao_variaveis (46)
+        on left: 5
+        on right: 4
+    declaracao_tipada (47)
+        on left: 6
+        on right: 7 8 24 25
+    lista_declaracao_variaveis (48)
+        on left: 7 8
+        on right: 5 8
+    lista_identificadores (49)
+        on left: 9 10
+        on right: 6 10 42
+    tipo (50)
+        on left: 11 12
+        on right: 6 26
+    possivel_secao_subrotinas (51)
+        on left: 13 14
+        on right: 2
+    secao_declaracao_subrotinas (52)
+        on left: 15
+        on right: 14
+    lista_declaracao_subrotinas (53)
+        on left: 16 17
+        on right: 15 17
+    declaracao_subrotina (54)
+        on left: 18 19
+        on right: 16 17
+    declaracao_procedimento (55)
+        on left: 20
+        on right: 18
+    possivel_parametros_formais (56)
+        on left: 21 22
+        on right: 20 26
+    parametros_formais (57)
+        on left: 23
+        on right: 22
+    lista_declaracao_parametros (58)
+        on left: 24 25
+        on right: 23 25
+    declaracao_funcao (59)
+        on left: 26
+        on right: 19
+    bloco_subrotina (60)
+        on left: 27
+        on right: 20 26
+    comando_composto (61)
+        on left: 28
+        on right: 2 27 37
+    lista_comandos (62)
+        on left: 29 30
+        on right: 28 30
+    comando (63)
+        on left: 31 32 33 34 35 36 37
+        on right: 29 30 39 40 41
+    atribuicao (64)
+        on left: 38
+        on right: 31
+    condicional (65)
+        on left: 39 40
+        on right: 33
+    repeticao (66)
+        on left: 41
+        on right: 34
+    leitura (67)
+        on left: 42
+        on right: 35
+    escrita (68)
+        on left: 43
+        on right: 36
+    lista_expressoes_nao_vazia (69)
+        on left: 44 45
+        on right: 43 45 47
+    lista_expressoes (70)
+        on left: 46 47
+        on right: 75
+    expressao (71)
+        on left: 48 49
+        on right: 38 39 40 41 44 45 71
+    relacao (72)
+        on left: 50 51 52 53 54 55
+        on right: 49
+    expressao_simples (73)
+        on left: 56 57 58 59 60 61
+        on right: 48 49 59 60 61
+    termo (74)
+        on left: 62 63 64 65
+        on right: 56 57 58 59 60 61
+    fator (75)
+        on left: 66 67 68 69 70 71
+        on right: 62 63 64 65 70
+    variavel (76)
+        on left: 72
+        on right: 66
+    logico (77)
+        on left: 73 74
+        on right: 68
+    chamada_geral (78)
+        on left: 75
+        on right: 32 69
+
+
+State 0
+
+    0 $accept: • programa $end
+
+    TK_PROGRAM  shift, and go to state 1
+
+    programa  go to state 2
+
+
+State 1
+
+    1 programa: TK_PROGRAM • ID TK_PTVG bloco TK_PT
+
+    ID  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: programa • $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 programa: TK_PROGRAM ID • TK_PTVG bloco TK_PT
+
+    TK_PTVG  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: programa $end •
+
+    $default  accept
+
+
+State 5
+
+    1 programa: TK_PROGRAM ID TK_PTVG • bloco TK_PT
+
+    TK_VAR  shift, and go to state 6
+
+    $default  reduce using rule 3 (possivel_secao_variaveis)
+
+    bloco                       go to state 7
+    possivel_secao_variaveis    go to state 8
+    secao_declaracao_variaveis  go to state 9
+
+
+State 6
+
+    5 secao_declaracao_variaveis: TK_VAR • lista_declaracao_variaveis
+
+    ID  shift, and go to state 10
+
+    declaracao_tipada           go to state 11
+    lista_declaracao_variaveis  go to state 12
+    lista_identificadores       go to state 13
+
+
+State 7
+
+    1 programa: TK_PROGRAM ID TK_PTVG bloco • TK_PT
+
+    TK_PT  shift, and go to state 14
+
+
+State 8
+
+    2 bloco: possivel_secao_variaveis • possivel_secao_subrotinas comando_composto
+
+    TK_PROCEDURE  shift, and go to state 15
+    TK_FUNCTION   shift, and go to state 16
+
+    $default  reduce using rule 13 (possivel_secao_subrotinas)
+
+    possivel_secao_subrotinas    go to state 17
+    secao_declaracao_subrotinas  go to state 18
+    lista_declaracao_subrotinas  go to state 19
+    declaracao_subrotina         go to state 20
+    declaracao_procedimento      go to state 21
+    declaracao_funcao            go to state 22
+
+
+State 9
+
+    4 possivel_secao_variaveis: secao_declaracao_variaveis •
+
+    $default  reduce using rule 4 (possivel_secao_variaveis)
+
+
+State 10
+
+    9 lista_identificadores: ID •
+
+    $default  reduce using rule 9 (lista_identificadores)
+
+
+State 11
+
+    7 lista_declaracao_variaveis: declaracao_tipada • TK_PTVG
+
+    TK_PTVG  shift, and go to state 23
+
+
+State 12
+
+    5 secao_declaracao_variaveis: TK_VAR lista_declaracao_variaveis •
+    8 lista_declaracao_variaveis: lista_declaracao_variaveis • declaracao_tipada TK_PTVG
+
+    ID  shift, and go to state 10
+
+    $default  reduce using rule 5 (secao_declaracao_variaveis)
+
+    declaracao_tipada      go to state 24
+    lista_identificadores  go to state 13
+
+
+State 13
+
+    6 declaracao_tipada: lista_identificadores • TK_DOISPT tipo
+   10 lista_identificadores: lista_identificadores • TK_VG ID
+
+    TK_DOISPT  shift, and go to state 25
+    TK_VG      shift, and go to state 26
+
+
+State 14
+
+    1 programa: TK_PROGRAM ID TK_PTVG bloco TK_PT •
+
+    $default  reduce using rule 1 (programa)
+
+
+State 15
+
+   20 declaracao_procedimento: TK_PROCEDURE • ID possivel_parametros_formais TK_PTVG bloco_subrotina
+
+    ID  shift, and go to state 27
+
+
+State 16
+
+   26 declaracao_funcao: TK_FUNCTION • ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
+
+    ID  shift, and go to state 28
+
+
+State 17
+
+    2 bloco: possivel_secao_variaveis possivel_secao_subrotinas • comando_composto
+
+    TK_BEGIN  shift, and go to state 29
+
+    comando_composto  go to state 30
+
+
+State 18
+
+   14 possivel_secao_subrotinas: secao_declaracao_subrotinas •
+
+    $default  reduce using rule 14 (possivel_secao_subrotinas)
+
+
+State 19
+
+   15 secao_declaracao_subrotinas: lista_declaracao_subrotinas •
+   17 lista_declaracao_subrotinas: lista_declaracao_subrotinas • declaracao_subrotina TK_PTVG
+
+    TK_PROCEDURE  shift, and go to state 15
+    TK_FUNCTION   shift, and go to state 16
+
+    $default  reduce using rule 15 (secao_declaracao_subrotinas)
+
+    declaracao_subrotina     go to state 31
+    declaracao_procedimento  go to state 21
+    declaracao_funcao        go to state 22
+
+
+State 20
+
+   16 lista_declaracao_subrotinas: declaracao_subrotina • TK_PTVG
+
+    TK_PTVG  shift, and go to state 32
+
+
+State 21
+
+   18 declaracao_subrotina: declaracao_procedimento •
+
+    $default  reduce using rule 18 (declaracao_subrotina)
+
+
+State 22
+
+   19 declaracao_subrotina: declaracao_funcao •
+
+    $default  reduce using rule 19 (declaracao_subrotina)
+
+
+State 23
+
+    7 lista_declaracao_variaveis: declaracao_tipada TK_PTVG •
+
+    $default  reduce using rule 7 (lista_declaracao_variaveis)
+
+
+State 24
+
+    8 lista_declaracao_variaveis: lista_declaracao_variaveis declaracao_tipada • TK_PTVG
+
+    TK_PTVG  shift, and go to state 33
+
+
+State 25
+
+    6 declaracao_tipada: lista_identificadores TK_DOISPT • tipo
+
+    TK_INTEGER  shift, and go to state 34
+    TK_BOOLEAN  shift, and go to state 35
+
+    tipo  go to state 36
+
+
+State 26
+
+   10 lista_identificadores: lista_identificadores TK_VG • ID
+
+    ID  shift, and go to state 37
+
+
+State 27
+
+   20 declaracao_procedimento: TK_PROCEDURE ID • possivel_parametros_formais TK_PTVG bloco_subrotina
+
+    TK_ABREPAR  shift, and go to state 38
+
+    $default  reduce using rule 21 (possivel_parametros_formais)
+
+    possivel_parametros_formais  go to state 39
+    parametros_formais           go to state 40
+
+
+State 28
+
+   26 declaracao_funcao: TK_FUNCTION ID • possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina
+
+    TK_ABREPAR  shift, and go to state 38
+
+    $default  reduce using rule 21 (possivel_parametros_formais)
+
+    possivel_parametros_formais  go to state 41
+    parametros_formais           go to state 40
+
+
+State 29
+
+   28 comando_composto: TK_BEGIN • lista_comandos TK_END
+
+    ID        shift, and go to state 42
+    TK_BEGIN  shift, and go to state 29
+    TK_WHILE  shift, and go to state 43
+    TK_IF     shift, and go to state 44
+    TK_READ   shift, and go to state 45
+    TK_WRITE  shift, and go to state 46
+
+    comando_composto  go to state 47
+    lista_comandos    go to state 48
+    comando           go to state 49
+    atribuicao        go to state 50
+    condicional       go to state 51
+    repeticao         go to state 52
+    leitura           go to state 53
+    escrita           go to state 54
+    chamada_geral     go to state 55
+
+
+State 30
+
+    2 bloco: possivel_secao_variaveis possivel_secao_subrotinas comando_composto •
+
+    $default  reduce using rule 2 (bloco)
+
+
+State 31
+
+   17 lista_declaracao_subrotinas: lista_declaracao_subrotinas declaracao_subrotina • TK_PTVG
+
+    TK_PTVG  shift, and go to state 56
+
+
+State 32
+
+   16 lista_declaracao_subrotinas: declaracao_subrotina TK_PTVG •
+
+    $default  reduce using rule 16 (lista_declaracao_subrotinas)
+
+
+State 33
+
+    8 lista_declaracao_variaveis: lista_declaracao_variaveis declaracao_tipada TK_PTVG •
+
+    $default  reduce using rule 8 (lista_declaracao_variaveis)
+
+
+State 34
+
+   12 tipo: TK_INTEGER •
+
+    $default  reduce using rule 12 (tipo)
+
+
+State 35
+
+   11 tipo: TK_BOOLEAN •
+
+    $default  reduce using rule 11 (tipo)
+
+
+State 36
+
+    6 declaracao_tipada: lista_identificadores TK_DOISPT tipo •
+
+    $default  reduce using rule 6 (declaracao_tipada)
+
+
+State 37
+
+   10 lista_identificadores: lista_identificadores TK_VG ID •
+
+    $default  reduce using rule 10 (lista_identificadores)
+
+
+State 38
+
+   23 parametros_formais: TK_ABREPAR • lista_declaracao_parametros TK_FECHAPAR
+
+    ID  shift, and go to state 10
+
+    declaracao_tipada            go to state 57
+    lista_identificadores        go to state 13
+    lista_declaracao_parametros  go to state 58
+
+
+State 39
+
+   20 declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais • TK_PTVG bloco_subrotina
+
+    TK_PTVG  shift, and go to state 59
+
+
+State 40
+
+   22 possivel_parametros_formais: parametros_formais •
+
+    $default  reduce using rule 22 (possivel_parametros_formais)
+
+
+State 41
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais • TK_DOISPT tipo TK_PTVG bloco_subrotina
+
+    TK_DOISPT  shift, and go to state 60
+
+
+State 42
+
+   38 atribuicao: ID • TK_ATRIB expressao
+   75 chamada_geral: ID • TK_ABREPAR lista_expressoes TK_FECHAPAR
+
+    TK_ABREPAR  shift, and go to state 61
+    TK_ATRIB    shift, and go to state 62
+
+
+State 43
+
+   41 repeticao: TK_WHILE • expressao TK_DO comando
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao          go to state 74
+    expressao_simples  go to state 75
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 44
+
+   39 condicional: TK_IF • expressao TK_THEN comando
+   40            | TK_IF • expressao TK_THEN comando TK_ELSE comando
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao          go to state 81
+    expressao_simples  go to state 75
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 45
+
+   42 leitura: TK_READ • TK_ABREPAR lista_identificadores TK_FECHAPAR
+
+    TK_ABREPAR  shift, and go to state 82
+
+
+State 46
+
+   43 escrita: TK_WRITE • TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR
+
+    TK_ABREPAR  shift, and go to state 83
+
+
+State 47
+
+   37 comando: comando_composto •
+
+    $default  reduce using rule 37 (comando)
+
+
+State 48
+
+   28 comando_composto: TK_BEGIN lista_comandos • TK_END
+   30 lista_comandos: lista_comandos • TK_PTVG comando
+
+    TK_END   shift, and go to state 84
+    TK_PTVG  shift, and go to state 85
+
+
+State 49
+
+   29 lista_comandos: comando •
+
+    $default  reduce using rule 29 (lista_comandos)
+
+
+State 50
+
+   31 comando: atribuicao •
+
+    $default  reduce using rule 31 (comando)
+
+
+State 51
+
+   33 comando: condicional •
+
+    $default  reduce using rule 33 (comando)
+
+
+State 52
+
+   34 comando: repeticao •
+
+    $default  reduce using rule 34 (comando)
+
+
+State 53
+
+   35 comando: leitura •
+
+    $default  reduce using rule 35 (comando)
+
+
+State 54
+
+   36 comando: escrita •
+
+    $default  reduce using rule 36 (comando)
+
+
+State 55
+
+   32 comando: chamada_geral •
+
+    $default  reduce using rule 32 (comando)
+
+
+State 56
+
+   17 lista_declaracao_subrotinas: lista_declaracao_subrotinas declaracao_subrotina TK_PTVG •
+
+    $default  reduce using rule 17 (lista_declaracao_subrotinas)
+
+
+State 57
+
+   24 lista_declaracao_parametros: declaracao_tipada •
+
+    $default  reduce using rule 24 (lista_declaracao_parametros)
+
+
+State 58
+
+   23 parametros_formais: TK_ABREPAR lista_declaracao_parametros • TK_FECHAPAR
+   25 lista_declaracao_parametros: lista_declaracao_parametros • TK_PTVG declaracao_tipada
+
+    TK_FECHAPAR  shift, and go to state 86
+    TK_PTVG      shift, and go to state 87
+
+
+State 59
+
+   20 declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais TK_PTVG • bloco_subrotina
+
+    TK_VAR  shift, and go to state 6
+
+    $default  reduce using rule 3 (possivel_secao_variaveis)
+
+    possivel_secao_variaveis    go to state 88
+    secao_declaracao_variaveis  go to state 9
+    bloco_subrotina             go to state 89
+
+
+State 60
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT • tipo TK_PTVG bloco_subrotina
+
+    TK_INTEGER  shift, and go to state 34
+    TK_BOOLEAN  shift, and go to state 35
+
+    tipo  go to state 90
+
+
+State 61
+
+   75 chamada_geral: ID TK_ABREPAR • lista_expressoes TK_FECHAPAR
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    $default  reduce using rule 46 (lista_expressoes)
+
+    lista_expressoes_nao_vazia  go to state 91
+    lista_expressoes            go to state 92
+    expressao                   go to state 93
+    expressao_simples           go to state 75
+    termo                       go to state 76
+    fator                       go to state 77
+    variavel                    go to state 78
+    logico                      go to state 79
+    chamada_geral               go to state 80
+
+
+State 62
+
+   38 atribuicao: ID TK_ATRIB • expressao
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao          go to state 94
+    expressao_simples  go to state 75
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 63
+
+   72 variavel: ID •
+   75 chamada_geral: ID • TK_ABREPAR lista_expressoes TK_FECHAPAR
+
+    TK_ABREPAR  shift, and go to state 61
+
+    $default  reduce using rule 72 (variavel)
+
+
+State 64
+
+   67 fator: NUM •
+
+    $default  reduce using rule 67 (fator)
+
+
+State 65
+
+   73 logico: TK_FALSE •
+
+    $default  reduce using rule 73 (logico)
+
+
+State 66
+
+   74 logico: TK_TRUE •
+
+    $default  reduce using rule 74 (logico)
+
+
+State 67
+
+   65 termo: TK_AND • fator
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_NOT      shift, and go to state 68
+    TK_ABREPAR  shift, and go to state 70
+
+    fator          go to state 95
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 68
+
+   70 fator: TK_NOT • fator
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_NOT      shift, and go to state 68
+    TK_ABREPAR  shift, and go to state 70
+
+    fator          go to state 96
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 69
+
+   64 termo: TK_DIV • fator
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_NOT      shift, and go to state 68
+    TK_ABREPAR  shift, and go to state 70
+
+    fator          go to state 97
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 70
+
+   71 fator: TK_ABREPAR • expressao TK_FECHAPAR
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao          go to state 98
+    expressao_simples  go to state 75
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 71
+
+   57 expressao_simples: TK_ADD • termo
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_MUL      shift, and go to state 73
+
+    termo          go to state 99
+    fator          go to state 77
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 72
+
+   58 expressao_simples: TK_SUB • termo
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_MUL      shift, and go to state 73
+
+    termo          go to state 100
+    fator          go to state 77
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 73
+
+   63 termo: TK_MUL • fator
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_NOT      shift, and go to state 68
+    TK_ABREPAR  shift, and go to state 70
+
+    fator          go to state 101
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 74
+
+   41 repeticao: TK_WHILE expressao • TK_DO comando
+
+    TK_DO  shift, and go to state 102
+
+
+State 75
+
+   48 expressao: expressao_simples •
+   49          | expressao_simples • relacao expressao_simples
+   59 expressao_simples: expressao_simples • TK_ADD termo
+   60                  | expressao_simples • TK_SUB termo
+   61                  | expressao_simples • TK_OR termo
+
+    TK_OR        shift, and go to state 103
+    TK_IGUAL     shift, and go to state 104
+    TK_DIF       shift, and go to state 105
+    TK_MENOR     shift, and go to state 106
+    TK_MENOR_IG  shift, and go to state 107
+    TK_MAIOR     shift, and go to state 108
+    TK_MAIOR_IG  shift, and go to state 109
+    TK_ADD       shift, and go to state 110
+    TK_SUB       shift, and go to state 111
+
+    $default  reduce using rule 48 (expressao)
+
+    relacao  go to state 112
+
+
+State 76
+
+   56 expressao_simples: termo •
+
+    $default  reduce using rule 56 (expressao_simples)
+
+
+State 77
+
+   62 termo: fator •
+
+    $default  reduce using rule 62 (termo)
+
+
+State 78
+
+   66 fator: variavel •
+
+    $default  reduce using rule 66 (fator)
+
+
+State 79
+
+   68 fator: logico •
+
+    $default  reduce using rule 68 (fator)
+
+
+State 80
+
+   69 fator: chamada_geral •
+
+    $default  reduce using rule 69 (fator)
+
+
+State 81
+
+   39 condicional: TK_IF expressao • TK_THEN comando
+   40            | TK_IF expressao • TK_THEN comando TK_ELSE comando
+
+    TK_THEN  shift, and go to state 113
+
+
+State 82
+
+   42 leitura: TK_READ TK_ABREPAR • lista_identificadores TK_FECHAPAR
+
+    ID  shift, and go to state 10
+
+    lista_identificadores  go to state 114
+
+
+State 83
+
+   43 escrita: TK_WRITE TK_ABREPAR • lista_expressoes_nao_vazia TK_FECHAPAR
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    lista_expressoes_nao_vazia  go to state 115
+    expressao                   go to state 93
+    expressao_simples           go to state 75
+    termo                       go to state 76
+    fator                       go to state 77
+    variavel                    go to state 78
+    logico                      go to state 79
+    chamada_geral               go to state 80
+
+
+State 84
+
+   28 comando_composto: TK_BEGIN lista_comandos TK_END •
+
+    $default  reduce using rule 28 (comando_composto)
+
+
+State 85
+
+   30 lista_comandos: lista_comandos TK_PTVG • comando
+
+    ID        shift, and go to state 42
+    TK_BEGIN  shift, and go to state 29
+    TK_WHILE  shift, and go to state 43
+    TK_IF     shift, and go to state 44
+    TK_READ   shift, and go to state 45
+    TK_WRITE  shift, and go to state 46
+
+    comando_composto  go to state 47
+    comando           go to state 116
+    atribuicao        go to state 50
+    condicional       go to state 51
+    repeticao         go to state 52
+    leitura           go to state 53
+    escrita           go to state 54
+    chamada_geral     go to state 55
+
+
+State 86
+
+   23 parametros_formais: TK_ABREPAR lista_declaracao_parametros TK_FECHAPAR •
+
+    $default  reduce using rule 23 (parametros_formais)
+
+
+State 87
+
+   25 lista_declaracao_parametros: lista_declaracao_parametros TK_PTVG • declaracao_tipada
+
+    ID  shift, and go to state 10
+
+    declaracao_tipada      go to state 117
+    lista_identificadores  go to state 13
+
+
+State 88
+
+   27 bloco_subrotina: possivel_secao_variaveis • comando_composto
+
+    TK_BEGIN  shift, and go to state 29
+
+    comando_composto  go to state 118
+
+
+State 89
+
+   20 declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina •
+
+    $default  reduce using rule 20 (declaracao_procedimento)
+
+
+State 90
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo • TK_PTVG bloco_subrotina
+
+    TK_PTVG  shift, and go to state 119
+
+
+State 91
+
+   45 lista_expressoes_nao_vazia: lista_expressoes_nao_vazia • TK_VG expressao
+   47 lista_expressoes: lista_expressoes_nao_vazia •
+
+    TK_VG  shift, and go to state 120
+
+    $default  reduce using rule 47 (lista_expressoes)
+
+
+State 92
+
+   75 chamada_geral: ID TK_ABREPAR lista_expressoes • TK_FECHAPAR
+
+    TK_FECHAPAR  shift, and go to state 121
+
+
+State 93
+
+   44 lista_expressoes_nao_vazia: expressao •
+
+    $default  reduce using rule 44 (lista_expressoes_nao_vazia)
+
+
+State 94
+
+   38 atribuicao: ID TK_ATRIB expressao •
+
+    $default  reduce using rule 38 (atribuicao)
+
+
+State 95
+
+   65 termo: TK_AND fator •
+
+    $default  reduce using rule 65 (termo)
+
+
+State 96
+
+   70 fator: TK_NOT fator •
+
+    $default  reduce using rule 70 (fator)
+
+
+State 97
+
+   64 termo: TK_DIV fator •
+
+    $default  reduce using rule 64 (termo)
+
+
+State 98
+
+   71 fator: TK_ABREPAR expressao • TK_FECHAPAR
+
+    TK_FECHAPAR  shift, and go to state 122
+
+
+State 99
+
+   57 expressao_simples: TK_ADD termo •
+
+    $default  reduce using rule 57 (expressao_simples)
+
+
+State 100
+
+   58 expressao_simples: TK_SUB termo •
+
+    $default  reduce using rule 58 (expressao_simples)
+
+
+State 101
+
+   63 termo: TK_MUL fator •
+
+    $default  reduce using rule 63 (termo)
+
+
+State 102
+
+   41 repeticao: TK_WHILE expressao TK_DO • comando
+
+    ID        shift, and go to state 42
+    TK_BEGIN  shift, and go to state 29
+    TK_WHILE  shift, and go to state 43
+    TK_IF     shift, and go to state 44
+    TK_READ   shift, and go to state 45
+    TK_WRITE  shift, and go to state 46
+
+    comando_composto  go to state 47
+    comando           go to state 123
+    atribuicao        go to state 50
+    condicional       go to state 51
+    repeticao         go to state 52
+    leitura           go to state 53
+    escrita           go to state 54
+    chamada_geral     go to state 55
+
+
+State 103
+
+   61 expressao_simples: expressao_simples TK_OR • termo
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_MUL      shift, and go to state 73
+
+    termo          go to state 124
+    fator          go to state 77
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 104
+
+   50 relacao: TK_IGUAL •
+
+    $default  reduce using rule 50 (relacao)
+
+
+State 105
+
+   51 relacao: TK_DIF •
+
+    $default  reduce using rule 51 (relacao)
+
+
+State 106
+
+   52 relacao: TK_MENOR •
+
+    $default  reduce using rule 52 (relacao)
+
+
+State 107
+
+   53 relacao: TK_MENOR_IG •
+
+    $default  reduce using rule 53 (relacao)
+
+
+State 108
+
+   54 relacao: TK_MAIOR •
+
+    $default  reduce using rule 54 (relacao)
+
+
+State 109
+
+   55 relacao: TK_MAIOR_IG •
+
+    $default  reduce using rule 55 (relacao)
+
+
+State 110
+
+   59 expressao_simples: expressao_simples TK_ADD • termo
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_MUL      shift, and go to state 73
+
+    termo          go to state 125
+    fator          go to state 77
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 111
+
+   60 expressao_simples: expressao_simples TK_SUB • termo
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_MUL      shift, and go to state 73
+
+    termo          go to state 126
+    fator          go to state 77
+    variavel       go to state 78
+    logico         go to state 79
+    chamada_geral  go to state 80
+
+
+State 112
+
+   49 expressao: expressao_simples relacao • expressao_simples
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao_simples  go to state 127
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 113
+
+   39 condicional: TK_IF expressao TK_THEN • comando
+   40            | TK_IF expressao TK_THEN • comando TK_ELSE comando
+
+    ID        shift, and go to state 42
+    TK_BEGIN  shift, and go to state 29
+    TK_WHILE  shift, and go to state 43
+    TK_IF     shift, and go to state 44
+    TK_READ   shift, and go to state 45
+    TK_WRITE  shift, and go to state 46
+
+    comando_composto  go to state 47
+    comando           go to state 128
+    atribuicao        go to state 50
+    condicional       go to state 51
+    repeticao         go to state 52
+    leitura           go to state 53
+    escrita           go to state 54
+    chamada_geral     go to state 55
+
+
+State 114
+
+   10 lista_identificadores: lista_identificadores • TK_VG ID
+   42 leitura: TK_READ TK_ABREPAR lista_identificadores • TK_FECHAPAR
+
+    TK_FECHAPAR  shift, and go to state 129
+    TK_VG        shift, and go to state 26
+
+
+State 115
+
+   43 escrita: TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia • TK_FECHAPAR
+   45 lista_expressoes_nao_vazia: lista_expressoes_nao_vazia • TK_VG expressao
+
+    TK_FECHAPAR  shift, and go to state 130
+    TK_VG        shift, and go to state 120
+
+
+State 116
+
+   30 lista_comandos: lista_comandos TK_PTVG comando •
+
+    $default  reduce using rule 30 (lista_comandos)
+
+
+State 117
+
+   25 lista_declaracao_parametros: lista_declaracao_parametros TK_PTVG declaracao_tipada •
+
+    $default  reduce using rule 25 (lista_declaracao_parametros)
+
+
+State 118
+
+   27 bloco_subrotina: possivel_secao_variaveis comando_composto •
+
+    $default  reduce using rule 27 (bloco_subrotina)
+
+
+State 119
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG • bloco_subrotina
+
+    TK_VAR  shift, and go to state 6
+
+    $default  reduce using rule 3 (possivel_secao_variaveis)
+
+    possivel_secao_variaveis    go to state 88
+    secao_declaracao_variaveis  go to state 9
+    bloco_subrotina             go to state 131
+
+
+State 120
+
+   45 lista_expressoes_nao_vazia: lista_expressoes_nao_vazia TK_VG • expressao
+
+    ID          shift, and go to state 63
+    NUM         shift, and go to state 64
+    TK_FALSE    shift, and go to state 65
+    TK_TRUE     shift, and go to state 66
+    TK_AND      shift, and go to state 67
+    TK_NOT      shift, and go to state 68
+    TK_DIV      shift, and go to state 69
+    TK_ABREPAR  shift, and go to state 70
+    TK_ADD      shift, and go to state 71
+    TK_SUB      shift, and go to state 72
+    TK_MUL      shift, and go to state 73
+
+    expressao          go to state 132
+    expressao_simples  go to state 75
+    termo              go to state 76
+    fator              go to state 77
+    variavel           go to state 78
+    logico             go to state 79
+    chamada_geral      go to state 80
+
+
+State 121
+
+   75 chamada_geral: ID TK_ABREPAR lista_expressoes TK_FECHAPAR •
+
+    $default  reduce using rule 75 (chamada_geral)
+
+
+State 122
+
+   71 fator: TK_ABREPAR expressao TK_FECHAPAR •
+
+    $default  reduce using rule 71 (fator)
+
+
+State 123
+
+   41 repeticao: TK_WHILE expressao TK_DO comando •
+
+    $default  reduce using rule 41 (repeticao)
+
+
+State 124
+
+   61 expressao_simples: expressao_simples TK_OR termo •
+
+    $default  reduce using rule 61 (expressao_simples)
+
+
+State 125
+
+   59 expressao_simples: expressao_simples TK_ADD termo •
+
+    $default  reduce using rule 59 (expressao_simples)
+
+
+State 126
+
+   60 expressao_simples: expressao_simples TK_SUB termo •
+
+    $default  reduce using rule 60 (expressao_simples)
+
+
+State 127
+
+   49 expressao: expressao_simples relacao expressao_simples •
+   59 expressao_simples: expressao_simples • TK_ADD termo
+   60                  | expressao_simples • TK_SUB termo
+   61                  | expressao_simples • TK_OR termo
+
+    TK_OR   shift, and go to state 103
+    TK_ADD  shift, and go to state 110
+    TK_SUB  shift, and go to state 111
+
+    $default  reduce using rule 49 (expressao)
+
+
+State 128
+
+   39 condicional: TK_IF expressao TK_THEN comando •
+   40            | TK_IF expressao TK_THEN comando • TK_ELSE comando
+
+    TK_ELSE  shift, and go to state 133
+
+    $default  reduce using rule 39 (condicional)
+
+
+State 129
+
+   42 leitura: TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR •
+
+    $default  reduce using rule 42 (leitura)
+
+
+State 130
+
+   43 escrita: TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR •
+
+    $default  reduce using rule 43 (escrita)
+
+
+State 131
+
+   26 declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina •
+
+    $default  reduce using rule 26 (declaracao_funcao)
+
+
+State 132
+
+   45 lista_expressoes_nao_vazia: lista_expressoes_nao_vazia TK_VG expressao •
+
+    $default  reduce using rule 45 (lista_expressoes_nao_vazia)
+
+
+State 133
+
+   40 condicional: TK_IF expressao TK_THEN comando TK_ELSE • comando
+
+    ID        shift, and go to state 42
+    TK_BEGIN  shift, and go to state 29
+    TK_WHILE  shift, and go to state 43
+    TK_IF     shift, and go to state 44
+    TK_READ   shift, and go to state 45
+    TK_WRITE  shift, and go to state 46
+
+    comando_composto  go to state 47
+    comando           go to state 134
+    atribuicao        go to state 50
+    condicional       go to state 51
+    repeticao         go to state 52
+    leitura           go to state 53
+    escrita           go to state 54
+    chamada_geral     go to state 55
+
+
+State 134
+
+   40 condicional: TK_IF expressao TK_THEN comando TK_ELSE comando •
+
+    $default  reduce using rule 40 (condicional)

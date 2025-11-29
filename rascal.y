@@ -1,5 +1,16 @@
 %{
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+extern int yylex();
+extern int yylineno;
+extern char* yytext;
+extern FILE* yyin;
+
+void yyerror(const char *s);
+
 int yylex(void);
 
 %}
@@ -19,6 +30,9 @@ int yylex(void);
 
 %token TK_ABREPAR TK_FECHAPAR TK_PTVG TK_IGUAL TK_DIF TK_MENOR TK_MENOR_IG
 %token TK_MAIOR TK_MAIOR_IG TK_ADD TK_SUB TK_MUL TK_ATRIB TK_DOISPT TK_VG TK_PT
+
+%nonassoc TK_THEN
+%nonassoc TK_ELSE
 
 %%
 programa
@@ -137,11 +151,17 @@ leitura
     ;
 
 escrita
-    : TK_WRITE TK_ABREPAR lista_expressoes TK_FECHAPAR
+    : TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR
+    ;
+
+lista_expressoes_nao_vazia
+    : expressao
+    | lista_expressoes_nao_vazia TK_VG expressao
     ;
 
 lista_expressoes
-    : /* nada */ | expressao | lista_expressoes TK_VG expressao
+    : /* nada */
+    | lista_expressoes_nao_vazia
     ;
 
 expressao
@@ -168,7 +188,6 @@ fator
     | chamada_geral
     | TK_NOT fator
     | TK_ABREPAR expressao TK_FECHAPAR
-    | TK_SUB fator
     ;
 
 variavel
