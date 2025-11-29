@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "ast.h"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -13,11 +13,18 @@ void yyerror(const char *s);
 
 int yylex(void);
 
+No* raiz = NULL;
+
 %}
+
+%code requires {
+    #include "ast.h"
+}
 
 %union {
     int ival;
     char *sval;
+    No* node;
 }
 
 %token <sval> ID
@@ -30,6 +37,16 @@ int yylex(void);
 
 %token TK_ABREPAR TK_FECHAPAR TK_PTVG TK_IGUAL TK_DIF TK_MENOR TK_MENOR_IG
 %token TK_MAIOR TK_MAIOR_IG TK_ADD TK_SUB TK_MUL TK_ATRIB TK_DOISPT TK_VG TK_PT
+
+%type <node> programa bloco possivel_secao_variaveis secao_declaracao_variaveis
+%type <node> declaracao_tipada lista_declaracao_variaveis lista_identificadores tipo
+%type <node> possivel_secao_subrotinas secao_declaracao_subrotinas lista_declaracao_subrotinas
+%type <node> declaracao_subrotina declaracao_procedimento declaracao_funcao
+%type <node> possivel_parametros_formais parametros_formais lista_declaracao_parametros
+%type <node> bloco_subrotina comando_composto lista_comandos comando
+%type <node> atribuicao condicional repeticao leitura escrita
+%type <node> lista_expressoes lista_expressoes_nao_vazia
+%type <node> expressao expressao_simples termo fator variavel logico chamada_geral relacao
 
 %nonassoc TK_THEN
 %nonassoc TK_ELSE
