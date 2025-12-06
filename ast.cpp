@@ -1,42 +1,336 @@
-#include "ast.h"
+#include "ast.hpp"
+#include <iostream>
 
-// converte o enum TipoNo em string pra facilitar ver nos prints
-std::string nodeTypeToString(TipoNo type) {
-    switch (type) {
-        case NO_PROGRAMA: return "PROGRAMA";
-        case NO_BLOCO: return "BLOCO";
-        case NO_VAR_DECL: return "DECL_VAR";
-        case NO_SUBROTINA: return "DECL_SUBROTINA";
-        case NO_PARAM_LIST: return "LISTA_PARAM";
-        case NO_BEGINEND: return "BEGIN_END";
-        case NO_ATRIB: return "ATRIBUICAO";
-        case NO_IF: return "IF";
-        case NO_WHILE: return "WHILE";
-        case NO_READ: return "READ";
-        case NO_WRITE: return "WRITE";
-        case NO_CHAMADA: return "CHAMADA";
-        case NO_OP_BINARIA: return "OP_BIN";
-        case NO_OP_UNARIA: return "OP_UN";
-        case NO_ID: return "ID";
-        case NO_INT: return "NUM";
-        case NO_BOOL: return "BOOL";
-        case NO_TIPO: return "TIPO";
-        default: return "DESCONHECIDO";
+void indent(int level) {
+    for (int i = 0; i < level; i++) {
+        std::cout << "  "; // Dois espaços por nível
     }
 }
 
-void No::print(int nivel) {
-    // esse foir é p espaçar um pouco a cada nivel da arvore no print
-    for (int i = 0; i < nivel; i++) std::cout << "  ";
+// funções para facilitar a impressao
+static const char* tipoVarToStr(TipoVar t) {
+    return (t == TipoVar::Integer) ? "integer" : "boolean";
+}
 
-    std::cout << nodeTypeToString(type);
+static const char* valorBoolToStr(ValorBool v) {
+    return (v == ValorBool::True) ? "true" : "false";
+}
 
-    if (!valor.empty()) {
-        std::cout << " (" << valor << ")";
+static const char* tipoSubrotinaToStr(TipoSubrotina t) {
+    return (t == TipoSubrotina::Procedure) ? "procedure" : "function";
+}
+
+static const char* opBinToStr(OperadorBinario op) {
+    switch (op) {
+        case OperadorBinario::Equal:      return "=";
+        case OperadorBinario::NotEqual:   return "<>";
+        case OperadorBinario::Less:       return "<";
+        case OperadorBinario::LessEq:     return "<=";
+        case OperadorBinario::Greater:    return ">";
+        case OperadorBinario::GreaterEq:  return ">=";
+        case OperadorBinario::Add:        return "+";
+        case OperadorBinario::Sub:        return "-";
+        case OperadorBinario::Or:         return "or";
+        case OperadorBinario::Mul:        return "*";
+        case OperadorBinario::Div:        return "div";
+        case OperadorBinario::And:        return "and";
     }
-    std::cout << std::endl;
+    return "?";
+}
 
-    for (auto filho : filhos) {
-        filho->print(nivel + 1);
+static const char* opUnToStr(OperadorUnario op) {
+    switch (op) {
+        case OperadorUnario::Negativo: return "-";
+        case OperadorUnario::Not:      return "not";
+    }
+    return "?";
+}
+
+
+// Programa
+Programa::~Programa() {
+    if (bloco) delete bloco;
+}
+
+void Programa::print(int ind) const {
+    indent(ind);
+    std::cout << "Programa: " << nome << "\n";
+    if (bloco) {
+        bloco->print(ind + 1);
+    }
+}
+
+// Bloco
+
+Bloco::~Bloco() {
+    for (auto v : vars)       delete v;
+    for (auto s : subrotinas) delete s;
+    for (auto c : comandos)   delete c;
+}
+
+
+void Bloco::print(int ind) const {
+    indent(ind);
+    std::cout << "Bloco\n";
+
+    if (!vars.empty()) {
+        indent(ind + 1);
+        std::cout << "Variaveis:\n";
+        for (auto v : vars)
+            v->print(ind + 2);
+    }
+
+    if (!subrotinas.empty()) {
+        indent(ind + 1);
+        std::cout << "Subrotinas:\n";
+        for (auto s : subrotinas)
+            s->print(ind + 2);
+    }
+
+    if (!comandos.empty()) {
+        indent(ind + 1);
+        std::cout << "Comandos:\n";
+        for (auto c : comandos)
+            c->print(ind + 2);
+    }
+}
+
+// Declaracoes
+void DeclaracaoVar::print(int ind) const {
+    indent(ind);
+    std::cout << "DeclaracaoVar: ";
+    for (size_t i = 0; i < ids.size(); ++i) {
+        if (i > 0) std::cout << ", ";
+        std::cout << ids[i];
+    }
+    std::cout << " : " << tipoVarToStr(tipo) << "\n";
+}
+
+
+DeclaracaoSub::~DeclaracaoSub() {
+    for (auto p : parametros)
+        delete p;
+    delete corpo;
+}
+
+void DeclaracaoSub::print(int ind) const {
+    indent(ind);
+    std::cout << "Subrotina (" << tipoSubrotinaToStr(tipoSub) << "): " << nome;
+
+    if (tipoSub == TipoSubrotina::Function) {
+        std::cout << " : " << tipoVarToStr(tipoRetorno);
+    }
+    std::cout << "\n";
+
+    if (!parametros.empty()) {
+        indent(ind + 1);
+        std::cout << "Parametros:\n";
+        for (auto p : parametros)
+            p->print(ind + 2);
+    }
+
+    if (corpo) {
+        indent(ind + 1);
+        std::cout << "Corpo:\n";
+        corpo->print(ind + 2);
+    }
+}
+
+// Blocos
+BlocoSub::~BlocoSub() {
+    for (auto v : locais)   delete v;
+    for (auto c : comandos) delete c;
+}
+
+void BlocoSub::print(int ind) const {
+    indent(ind);
+    std::cout << "BlocoSub\n";
+
+    if (!locais.empty()) {
+        indent(ind + 1);
+        std::cout << "Variaveis Locais:\n";
+        for (auto v : locais)
+            v->print(ind + 2);
+    }
+
+    if (!comandos.empty()) {
+        indent(ind + 1);
+        std::cout << "Comandos:\n";
+        for (auto c : comandos)
+            c->print(ind + 2);
+    }
+}
+
+// Comandos
+AtribuicaoCmd::~AtribuicaoCmd() {
+    if (expr) delete expr;
+}
+
+void AtribuicaoCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "Atribuicao: " << id << " :=\n";
+    if (expr)
+        expr->print(ind + 1);
+}
+
+ComandoComposto::~ComandoComposto() {
+    for (auto c : comandos) {
+        if (c) delete c;
+    }
+    comandos.clear();
+}
+
+// Print: percorre o vetor e imprime cada comando
+void ComandoComposto::print(int level) const {
+    indent(level);
+    std::cout << "Comando Composto (begin...end)" << std::endl;
+    for (auto c : comandos) {
+        if (c) c->print(level + 1);
+    }
+}
+
+ChamadaProcedimentoCmd::~ChamadaProcedimentoCmd() {
+    for (auto e : args)
+        delete e;
+}
+
+void ChamadaProcedimentoCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "ChamadaProcedimento: " << id << "\n";
+    if (!args.empty()) {
+        indent(ind + 1);
+        std::cout << "Argumentos:\n";
+        for (auto e : args)
+            e->print(ind + 2);
+    }
+}
+
+IfCmd::~IfCmd() {
+    delete cond;
+    delete thenCmd;
+    delete elseCmd;
+}
+
+void IfCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "If\n";
+
+    indent(ind + 1);
+    std::cout << "Condicao:\n";
+    if (cond) cond->print(ind + 2);
+
+    indent(ind + 1);
+    std::cout << "Then:\n";
+    if (thenCmd) thenCmd->print(ind + 2);
+
+    if (elseCmd) {
+        indent(ind + 1);
+        std::cout << "Else:\n";
+        elseCmd->print(ind + 2);
+    }
+}
+
+WhileCmd::~WhileCmd() {
+    delete cond;
+    delete corpo;
+}
+
+void WhileCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "While\n";
+
+    indent(ind + 1);
+    std::cout << "Condicao:\n";
+    if (cond) cond->print(ind + 2);
+
+    indent(ind + 1);
+    std::cout << "Corpo:\n";
+    if (corpo) corpo->print(ind + 2);
+}
+
+
+void LeituraCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "Read: ";
+    for (size_t i = 0; i < ids.size(); ++i) {
+        if (i > 0) std::cout << ", ";
+        std::cout << ids[i];
+    }
+    std::cout << "\n";
+}
+
+
+EscritaCmd::~EscritaCmd() {
+    for (auto e : exprs)
+        delete e;
+}
+
+void EscritaCmd::print(int ind) const {
+    indent(ind);
+    std::cout << "Write:\n";
+    for (auto e : exprs)
+        e->print(ind + 1);
+}
+
+// Expressoes
+void VarExpr::print(int ind) const {
+    indent(ind);
+    std::cout << "Var: " << id << "\n";
+}
+
+void IntConstExpr::print(int ind) const {
+    indent(ind);
+    std::cout << "Int: " << valor << "\n";
+}
+
+void BoolConstExpr::print(int ind) const {
+    indent(ind);
+    std::cout << "Bool: " << valorBoolToStr(valor) << "\n";
+}
+
+
+ExpressaoBinaria::~ExpressaoBinaria() {
+    if (esq) delete esq;
+    if (dir) delete dir;
+}
+
+void ExpressaoBinaria::print(int ind) const {
+    indent(ind);
+    std::cout << "ExprBinaria (" << opBinToStr(op) << ")\n";
+
+    if (esq) {
+        indent(ind + 1);
+        std::cout << "Esq:\n";
+        esq->print(ind + 2);
+    }
+
+    if (dir) {
+        indent(ind + 1);
+        std::cout << "Dir:\n";
+        dir->print(ind + 2);
+    }
+}
+
+
+void ExpressaoUnaria::print(int ind) const {
+    indent(ind);
+    std::cout << "ExprUnaria (" << opUnToStr(op) << ")\n";
+    if (expr) expr->print(ind + 1);
+}
+
+
+ChamadaFuncao::~ChamadaFuncao() {
+    for (auto e : args)
+        delete e;
+}
+
+void ChamadaFuncao::print(int ind) const {
+    indent(ind);
+    std::cout << "ChamadaFuncao: " << id << "\n";
+    if (!args.empty()) {
+        indent(ind + 1);
+        std::cout << "Argumentos:\n";
+        for (auto e : args)
+            e->print(ind + 2);
     }
 }
