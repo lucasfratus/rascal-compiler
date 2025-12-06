@@ -1,4 +1,5 @@
-#include "symbols.h"
+#include "symbols.hpp"
+#include <iostream>
 
 TabelaDeSimbolos::TabelaDeSimbolos() {
     enterScope();
@@ -22,7 +23,7 @@ void TabelaDeSimbolos::exitScope() {
     scopes.pop_back();
 }
 
-bool TabelaDeSimbolos::insert(std::string name, Categoria cat, TipoDado type) {
+bool TabelaDeSimbolos::insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params) {
     if (scopes.back().count(name)) {
         return false; 
     }
@@ -34,7 +35,7 @@ bool TabelaDeSimbolos::insert(std::string name, Categoria cat, TipoDado type) {
         offset = var_offset_local++;
     }
 
-    Simbolo* sym = new Simbolo(name, cat, type, offset);
+    Simbolo* sym = new Simbolo(name, cat, type, offset, params);
     scopes.back()[name] = sym;
     return true;
 }

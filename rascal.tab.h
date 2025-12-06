@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 23 "rascal.y"
+#line 24 "rascal.y"
 
     #include "ast.hpp"
     #include <vector>
@@ -108,7 +108,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 28 "rascal.y"
+#line 29 "rascal.y"
 
     int ival;
     char *sval;

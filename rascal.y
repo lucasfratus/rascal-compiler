@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "ast.hpp"
+#include "semantico.hpp"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -450,6 +451,15 @@ int main(int argc, char **argv) {
     if (raiz) {
         std::cout << "--- AST GERADA COM SUCESSO ---" << std::endl;
         raiz->print();
+
+        AnalisadorSemantico semantico;
+        if (semantico.analyze(raiz)) {
+            std::cout << "--- ANALISE SEMANTICA: SUCESSO! ---" << std::endl;
+            // Aqui chamaremos o gerador de código depois
+        } else {
+            std::cerr << "--- ANALISE SEMANTICA: FALHOU COM ERROS ---" << std::endl;
+        }
+
         delete raiz;
     }
 

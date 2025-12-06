@@ -77,6 +77,7 @@
 #include <vector>
 #include <string>
 #include "ast.hpp"
+#include "semantico.hpp"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -89,7 +90,7 @@ int yylex(void);
 Programa* raiz = NULL;
 
 
-#line 93 "rascal.tab.c"
+#line 94 "rascal.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -585,14 +586,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    92,    92,    99,   112,   115,   122,   129,   137,   142,
-     150,   155,   163,   164,   169,   172,   179,   183,   188,   196,
-     197,   201,   209,   210,   214,   219,   224,   233,   241,   251,
-     255,   260,   268,   269,   275,   276,   277,   278,   279,   287,
-     295,   299,   306,   313,   321,   330,   335,   343,   344,   348,
-     349,   356,   357,   358,   359,   360,   361,   365,   366,   367,
-     371,   375,   379,   386,   387,   391,   395,   402,   403,   404,
-     405,   406,   410,   414,   418,   419,   423
+       0,    93,    93,   100,   113,   116,   123,   130,   138,   143,
+     151,   156,   164,   165,   170,   173,   180,   184,   189,   197,
+     198,   202,   210,   211,   215,   220,   225,   234,   242,   252,
+     256,   261,   269,   270,   276,   277,   278,   279,   280,   288,
+     296,   300,   307,   314,   322,   331,   336,   344,   345,   349,
+     350,   357,   358,   359,   360,   361,   362,   366,   367,   368,
+     372,   376,   380,   387,   388,   392,   396,   403,   404,   405,
+     406,   407,   411,   415,   419,   420,   424
 };
 #endif
 
@@ -1248,15 +1249,15 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* programa: TK_PROGRAM ID TK_PTVG bloco TK_PT  */
-#line 93 "rascal.y"
+#line 94 "rascal.y"
     {
         raiz = new Programa((yyvsp[-3].sval), (yyvsp[-1].ptr_bloco));
     }
-#line 1256 "rascal.tab.c"
+#line 1257 "rascal.tab.c"
     break;
 
   case 3: /* bloco: possivel_secao_variaveis possivel_secao_subrotinas comando_composto  */
-#line 100 "rascal.y"
+#line 101 "rascal.y"
     {
         (yyval.ptr_bloco) = new Bloco();
         if ((yyvsp[-2].vec_decl_var)) (yyval.ptr_bloco)->vars = *(yyvsp[-2].vec_decl_var);
@@ -1265,554 +1266,554 @@ yyreduce:
         
         delete (yyvsp[-2].vec_decl_var); delete (yyvsp[-1].vec_decl_sub); delete (yyvsp[0].vec_comando);
     }
-#line 1269 "rascal.tab.c"
+#line 1270 "rascal.tab.c"
     break;
 
   case 4: /* possivel_secao_variaveis: %empty  */
-#line 112 "rascal.y"
+#line 113 "rascal.y"
     { 
         (yyval.vec_decl_var) = new std::vector<DeclaracaoVar*>(); 
     }
-#line 1277 "rascal.tab.c"
+#line 1278 "rascal.tab.c"
     break;
 
   case 5: /* possivel_secao_variaveis: secao_declaracao_variaveis  */
-#line 116 "rascal.y"
+#line 117 "rascal.y"
     { 
         (yyval.vec_decl_var) = (yyvsp[0].vec_decl_var); 
     }
-#line 1285 "rascal.tab.c"
+#line 1286 "rascal.tab.c"
     break;
 
   case 6: /* secao_declaracao_variaveis: TK_VAR lista_declaracao_variaveis  */
-#line 123 "rascal.y"
+#line 124 "rascal.y"
     {
         (yyval.vec_decl_var) = (yyvsp[0].vec_decl_var);
     }
-#line 1293 "rascal.tab.c"
+#line 1294 "rascal.tab.c"
     break;
 
   case 7: /* declaracao_tipada: lista_identificadores TK_DOISPT tipo  */
-#line 130 "rascal.y"
+#line 131 "rascal.y"
     {
         (yyval.ptr_decl_var) = new DeclaracaoVar((yyvsp[0].tipo_var), *(yyvsp[-2].vec_str));
         delete (yyvsp[-2].vec_str);
     }
-#line 1302 "rascal.tab.c"
+#line 1303 "rascal.tab.c"
     break;
 
   case 8: /* lista_declaracao_variaveis: declaracao_tipada TK_PTVG  */
-#line 138 "rascal.y"
+#line 139 "rascal.y"
     {
         (yyval.vec_decl_var) = new std::vector<DeclaracaoVar*>();
         (yyval.vec_decl_var)->push_back((yyvsp[-1].ptr_decl_var));
     }
-#line 1311 "rascal.tab.c"
+#line 1312 "rascal.tab.c"
     break;
 
   case 9: /* lista_declaracao_variaveis: lista_declaracao_variaveis declaracao_tipada TK_PTVG  */
-#line 143 "rascal.y"
+#line 144 "rascal.y"
     {
         (yyval.vec_decl_var) = (yyvsp[-2].vec_decl_var);
         (yyval.vec_decl_var)->push_back((yyvsp[-1].ptr_decl_var));
     }
-#line 1320 "rascal.tab.c"
+#line 1321 "rascal.tab.c"
     break;
 
   case 10: /* lista_identificadores: ID  */
-#line 151 "rascal.y"
+#line 152 "rascal.y"
     {
         (yyval.vec_str) = new std::vector<std::string>();
         (yyval.vec_str)->push_back((yyvsp[0].sval));
     }
-#line 1329 "rascal.tab.c"
+#line 1330 "rascal.tab.c"
     break;
 
   case 11: /* lista_identificadores: lista_identificadores TK_VG ID  */
-#line 156 "rascal.y"
+#line 157 "rascal.y"
     {
         (yyval.vec_str) = (yyvsp[-2].vec_str);
         (yyval.vec_str)->push_back((yyvsp[0].sval));
     }
-#line 1338 "rascal.tab.c"
+#line 1339 "rascal.tab.c"
     break;
 
   case 12: /* tipo: TK_BOOLEAN  */
-#line 163 "rascal.y"
+#line 164 "rascal.y"
                  { (yyval.tipo_var) = TipoVar::Boolean; }
-#line 1344 "rascal.tab.c"
+#line 1345 "rascal.tab.c"
     break;
 
   case 13: /* tipo: TK_INTEGER  */
-#line 164 "rascal.y"
+#line 165 "rascal.y"
                  { (yyval.tipo_var) = TipoVar::Integer; }
-#line 1350 "rascal.tab.c"
+#line 1351 "rascal.tab.c"
     break;
 
   case 14: /* possivel_secao_subrotinas: %empty  */
-#line 169 "rascal.y"
+#line 170 "rascal.y"
     { 
         (yyval.vec_decl_sub) = new std::vector<DeclaracaoSub*>(); 
     }
-#line 1358 "rascal.tab.c"
+#line 1359 "rascal.tab.c"
     break;
 
   case 15: /* possivel_secao_subrotinas: secao_declaracao_subrotinas  */
-#line 173 "rascal.y"
+#line 174 "rascal.y"
     { 
         (yyval.vec_decl_sub) = (yyvsp[0].vec_decl_sub); 
     }
-#line 1366 "rascal.tab.c"
+#line 1367 "rascal.tab.c"
     break;
 
   case 16: /* secao_declaracao_subrotinas: lista_declaracao_subrotinas  */
-#line 179 "rascal.y"
+#line 180 "rascal.y"
                                   { (yyval.vec_decl_sub) = (yyvsp[0].vec_decl_sub); }
-#line 1372 "rascal.tab.c"
+#line 1373 "rascal.tab.c"
     break;
 
   case 17: /* lista_declaracao_subrotinas: declaracao_subrotina TK_PTVG  */
-#line 184 "rascal.y"
+#line 185 "rascal.y"
     {
         (yyval.vec_decl_sub) = new std::vector<DeclaracaoSub*>();
         (yyval.vec_decl_sub)->push_back((yyvsp[-1].ptr_decl_sub));
     }
-#line 1381 "rascal.tab.c"
+#line 1382 "rascal.tab.c"
     break;
 
   case 18: /* lista_declaracao_subrotinas: lista_declaracao_subrotinas declaracao_subrotina TK_PTVG  */
-#line 189 "rascal.y"
+#line 190 "rascal.y"
     {
         (yyval.vec_decl_sub) = (yyvsp[-2].vec_decl_sub);
         (yyval.vec_decl_sub)->push_back((yyvsp[-1].ptr_decl_sub));
     }
-#line 1390 "rascal.tab.c"
+#line 1391 "rascal.tab.c"
     break;
 
   case 19: /* declaracao_subrotina: declaracao_procedimento  */
-#line 196 "rascal.y"
+#line 197 "rascal.y"
                               { (yyval.ptr_decl_sub) = (yyvsp[0].ptr_decl_sub); }
-#line 1396 "rascal.tab.c"
+#line 1397 "rascal.tab.c"
     break;
 
   case 20: /* declaracao_subrotina: declaracao_funcao  */
-#line 197 "rascal.y"
+#line 198 "rascal.y"
                         { (yyval.ptr_decl_sub) = (yyvsp[0].ptr_decl_sub); }
-#line 1402 "rascal.tab.c"
+#line 1403 "rascal.tab.c"
     break;
 
   case 21: /* declaracao_procedimento: TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina  */
-#line 202 "rascal.y"
+#line 203 "rascal.y"
     {
         (yyval.ptr_decl_sub) = new DeclaracaoSub((yyvsp[-3].sval), *(yyvsp[-2].vec_decl_var), (yyvsp[0].ptr_bloco_sub)); 
         delete (yyvsp[-2].vec_decl_var);
     }
-#line 1411 "rascal.tab.c"
+#line 1412 "rascal.tab.c"
     break;
 
   case 22: /* possivel_parametros_formais: %empty  */
-#line 209 "rascal.y"
+#line 210 "rascal.y"
                   { (yyval.vec_decl_var) = new std::vector<DeclaracaoVar*>(); }
-#line 1417 "rascal.tab.c"
+#line 1418 "rascal.tab.c"
     break;
 
   case 23: /* possivel_parametros_formais: parametros_formais  */
-#line 210 "rascal.y"
+#line 211 "rascal.y"
                          { (yyval.vec_decl_var) = (yyvsp[0].vec_decl_var); }
-#line 1423 "rascal.tab.c"
+#line 1424 "rascal.tab.c"
     break;
 
   case 24: /* parametros_formais: TK_ABREPAR lista_declaracao_parametros TK_FECHAPAR  */
-#line 214 "rascal.y"
+#line 215 "rascal.y"
                                                          { (yyval.vec_decl_var) = (yyvsp[-1].vec_decl_var); }
-#line 1429 "rascal.tab.c"
+#line 1430 "rascal.tab.c"
     break;
 
   case 25: /* lista_declaracao_parametros: declaracao_tipada  */
-#line 220 "rascal.y"
+#line 221 "rascal.y"
     {
         (yyval.vec_decl_var) = new std::vector<DeclaracaoVar*>();
         (yyval.vec_decl_var)->push_back((yyvsp[0].ptr_decl_var));
     }
-#line 1438 "rascal.tab.c"
+#line 1439 "rascal.tab.c"
     break;
 
   case 26: /* lista_declaracao_parametros: lista_declaracao_parametros TK_PTVG declaracao_tipada  */
-#line 225 "rascal.y"
+#line 226 "rascal.y"
     {
         (yyval.vec_decl_var) = (yyvsp[-2].vec_decl_var);
         (yyval.vec_decl_var)->push_back((yyvsp[0].ptr_decl_var));
     }
-#line 1447 "rascal.tab.c"
+#line 1448 "rascal.tab.c"
     break;
 
   case 27: /* declaracao_funcao: TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina  */
-#line 234 "rascal.y"
+#line 235 "rascal.y"
     {
         (yyval.ptr_decl_sub) = new DeclaracaoSub((yyvsp[-5].sval), *(yyvsp[-4].vec_decl_var), (yyvsp[-2].tipo_var), (yyvsp[0].ptr_bloco_sub));
         delete (yyvsp[-4].vec_decl_var);
     }
-#line 1456 "rascal.tab.c"
+#line 1457 "rascal.tab.c"
     break;
 
   case 28: /* bloco_subrotina: possivel_secao_variaveis comando_composto  */
-#line 242 "rascal.y"
+#line 243 "rascal.y"
     {
         (yyval.ptr_bloco_sub) = new BlocoSub();
         if((yyvsp[-1].vec_decl_var)) (yyval.ptr_bloco_sub)->locais = *(yyvsp[-1].vec_decl_var);
         if((yyvsp[0].vec_comando)) (yyval.ptr_bloco_sub)->comandos = *(yyvsp[0].vec_comando);
         delete (yyvsp[-1].vec_decl_var); delete (yyvsp[0].vec_comando);
     }
-#line 1467 "rascal.tab.c"
+#line 1468 "rascal.tab.c"
     break;
 
   case 29: /* comando_composto: TK_BEGIN lista_comandos TK_END  */
-#line 251 "rascal.y"
+#line 252 "rascal.y"
                                      { (yyval.vec_comando) = (yyvsp[-1].vec_comando); }
-#line 1473 "rascal.tab.c"
+#line 1474 "rascal.tab.c"
     break;
 
   case 30: /* lista_comandos: comando  */
-#line 256 "rascal.y"
+#line 257 "rascal.y"
     {
         (yyval.vec_comando) = new std::vector<Comando*>();
         (yyval.vec_comando)->push_back((yyvsp[0].ptr_comando));
     }
-#line 1482 "rascal.tab.c"
+#line 1483 "rascal.tab.c"
     break;
 
   case 31: /* lista_comandos: lista_comandos TK_PTVG comando  */
-#line 261 "rascal.y"
+#line 262 "rascal.y"
     {
         (yyval.vec_comando) = (yyvsp[-2].vec_comando);
         (yyval.vec_comando)->push_back((yyvsp[0].ptr_comando));
     }
-#line 1491 "rascal.tab.c"
+#line 1492 "rascal.tab.c"
     break;
 
   case 32: /* comando: atribuicao  */
-#line 268 "rascal.y"
+#line 269 "rascal.y"
                  { (yyval.ptr_comando) = (yyvsp[0].ptr_comando); }
-#line 1497 "rascal.tab.c"
+#line 1498 "rascal.tab.c"
     break;
 
   case 33: /* comando: chamada_geral  */
-#line 270 "rascal.y"
+#line 271 "rascal.y"
     { 
         ChamadaFuncao* call = dynamic_cast<ChamadaFuncao*>((yyvsp[0].ptr_expr));
         (yyval.ptr_comando) = new ChamadaProcedimentoCmd(call->id);
         ((ChamadaProcedimentoCmd*)(yyval.ptr_comando))->args = call->args;
     }
-#line 1507 "rascal.tab.c"
+#line 1508 "rascal.tab.c"
     break;
 
   case 34: /* comando: condicional  */
-#line 275 "rascal.y"
+#line 276 "rascal.y"
                   { (yyval.ptr_comando) = (yyvsp[0].ptr_comando); }
-#line 1513 "rascal.tab.c"
+#line 1514 "rascal.tab.c"
     break;
 
   case 35: /* comando: repeticao  */
-#line 276 "rascal.y"
+#line 277 "rascal.y"
                 { (yyval.ptr_comando) = (yyvsp[0].ptr_comando); }
-#line 1519 "rascal.tab.c"
+#line 1520 "rascal.tab.c"
     break;
 
   case 36: /* comando: leitura  */
-#line 277 "rascal.y"
+#line 278 "rascal.y"
               { (yyval.ptr_comando) = (yyvsp[0].ptr_comando); }
-#line 1525 "rascal.tab.c"
+#line 1526 "rascal.tab.c"
     break;
 
   case 37: /* comando: escrita  */
-#line 278 "rascal.y"
+#line 279 "rascal.y"
               { (yyval.ptr_comando) = (yyvsp[0].ptr_comando); }
-#line 1531 "rascal.tab.c"
+#line 1532 "rascal.tab.c"
     break;
 
   case 38: /* comando: comando_composto  */
-#line 280 "rascal.y"
+#line 281 "rascal.y"
     {
         (yyval.ptr_comando) = new ComandoComposto(*(yyvsp[0].vec_comando)); 
         delete (yyvsp[0].vec_comando);
     }
-#line 1540 "rascal.tab.c"
+#line 1541 "rascal.tab.c"
     break;
 
   case 39: /* atribuicao: ID TK_ATRIB expressao  */
-#line 288 "rascal.y"
+#line 289 "rascal.y"
     {
         (yyval.ptr_comando) = new AtribuicaoCmd((yyvsp[-2].sval), (yyvsp[0].ptr_expr));
     }
-#line 1548 "rascal.tab.c"
+#line 1549 "rascal.tab.c"
     break;
 
   case 40: /* condicional: TK_IF expressao TK_THEN comando  */
-#line 296 "rascal.y"
+#line 297 "rascal.y"
     {
         (yyval.ptr_comando) = new IfCmd((yyvsp[-2].ptr_expr), (yyvsp[0].ptr_comando), NULL);
     }
-#line 1556 "rascal.tab.c"
+#line 1557 "rascal.tab.c"
     break;
 
   case 41: /* condicional: TK_IF expressao TK_THEN comando TK_ELSE comando  */
-#line 300 "rascal.y"
+#line 301 "rascal.y"
     {
         (yyval.ptr_comando) = new IfCmd((yyvsp[-4].ptr_expr), (yyvsp[-2].ptr_comando), (yyvsp[0].ptr_comando));
     }
-#line 1564 "rascal.tab.c"
+#line 1565 "rascal.tab.c"
     break;
 
   case 42: /* repeticao: TK_WHILE expressao TK_DO comando  */
-#line 307 "rascal.y"
+#line 308 "rascal.y"
     {
         (yyval.ptr_comando) = new WhileCmd((yyvsp[-2].ptr_expr), (yyvsp[0].ptr_comando));
     }
-#line 1572 "rascal.tab.c"
+#line 1573 "rascal.tab.c"
     break;
 
   case 43: /* leitura: TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR  */
-#line 314 "rascal.y"
+#line 315 "rascal.y"
     {
         (yyval.ptr_comando) = new LeituraCmd(*(yyvsp[-1].vec_str));
         delete (yyvsp[-1].vec_str);
     }
-#line 1581 "rascal.tab.c"
+#line 1582 "rascal.tab.c"
     break;
 
   case 44: /* escrita: TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR  */
-#line 322 "rascal.y"
+#line 323 "rascal.y"
     {
         (yyval.ptr_comando) = new EscritaCmd();
         ((EscritaCmd*)(yyval.ptr_comando))->exprs = *(yyvsp[-1].vec_expr);
         delete (yyvsp[-1].vec_expr);
     }
-#line 1591 "rascal.tab.c"
+#line 1592 "rascal.tab.c"
     break;
 
   case 45: /* lista_expressoes_nao_vazia: expressao  */
-#line 331 "rascal.y"
+#line 332 "rascal.y"
     {
         (yyval.vec_expr) = new std::vector<Expressao*>();
         (yyval.vec_expr)->push_back((yyvsp[0].ptr_expr));
     }
-#line 1600 "rascal.tab.c"
+#line 1601 "rascal.tab.c"
     break;
 
   case 46: /* lista_expressoes_nao_vazia: lista_expressoes_nao_vazia TK_VG expressao  */
-#line 336 "rascal.y"
+#line 337 "rascal.y"
     {
         (yyval.vec_expr) = (yyvsp[-2].vec_expr);
         (yyval.vec_expr)->push_back((yyvsp[0].ptr_expr));
     }
-#line 1609 "rascal.tab.c"
+#line 1610 "rascal.tab.c"
     break;
 
   case 47: /* lista_expressoes: %empty  */
-#line 343 "rascal.y"
+#line 344 "rascal.y"
                   { (yyval.vec_expr) = new std::vector<Expressao*>(); }
-#line 1615 "rascal.tab.c"
+#line 1616 "rascal.tab.c"
     break;
 
   case 48: /* lista_expressoes: lista_expressoes_nao_vazia  */
-#line 344 "rascal.y"
+#line 345 "rascal.y"
                                  { (yyval.vec_expr) = (yyvsp[0].vec_expr); }
-#line 1621 "rascal.tab.c"
+#line 1622 "rascal.tab.c"
     break;
 
   case 49: /* expressao: expressao_simples  */
-#line 348 "rascal.y"
+#line 349 "rascal.y"
                         { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1627 "rascal.tab.c"
+#line 1628 "rascal.tab.c"
     break;
 
   case 50: /* expressao: expressao_simples relacao expressao_simples  */
-#line 350 "rascal.y"
+#line 351 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria((yyvsp[-1].op_bin), (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1635 "rascal.tab.c"
+#line 1636 "rascal.tab.c"
     break;
 
   case 51: /* relacao: TK_IGUAL  */
-#line 356 "rascal.y"
+#line 357 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::Equal; }
-#line 1641 "rascal.tab.c"
+#line 1642 "rascal.tab.c"
     break;
 
   case 52: /* relacao: TK_DIF  */
-#line 357 "rascal.y"
+#line 358 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::NotEqual; }
-#line 1647 "rascal.tab.c"
+#line 1648 "rascal.tab.c"
     break;
 
   case 53: /* relacao: TK_MENOR  */
-#line 358 "rascal.y"
+#line 359 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::Less; }
-#line 1653 "rascal.tab.c"
+#line 1654 "rascal.tab.c"
     break;
 
   case 54: /* relacao: TK_MENOR_IG  */
-#line 359 "rascal.y"
+#line 360 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::LessEq; }
-#line 1659 "rascal.tab.c"
+#line 1660 "rascal.tab.c"
     break;
 
   case 55: /* relacao: TK_MAIOR  */
-#line 360 "rascal.y"
+#line 361 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::Greater; }
-#line 1665 "rascal.tab.c"
+#line 1666 "rascal.tab.c"
     break;
 
   case 56: /* relacao: TK_MAIOR_IG  */
-#line 361 "rascal.y"
+#line 362 "rascal.y"
                     { (yyval.op_bin) = OperadorBinario::GreaterEq; }
-#line 1671 "rascal.tab.c"
+#line 1672 "rascal.tab.c"
     break;
 
   case 57: /* expressao_simples: termo  */
-#line 365 "rascal.y"
+#line 366 "rascal.y"
             { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1677 "rascal.tab.c"
+#line 1678 "rascal.tab.c"
     break;
 
   case 58: /* expressao_simples: TK_ADD termo  */
-#line 366 "rascal.y"
+#line 367 "rascal.y"
                    { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); /* Unario positivo eh ignorado ou tratado */ }
-#line 1683 "rascal.tab.c"
+#line 1684 "rascal.tab.c"
     break;
 
   case 59: /* expressao_simples: TK_SUB termo  */
-#line 368 "rascal.y"
+#line 369 "rascal.y"
     { 
         (yyval.ptr_expr) = new ExpressaoUnaria(OperadorUnario::Negativo, (yyvsp[0].ptr_expr));
     }
-#line 1691 "rascal.tab.c"
+#line 1692 "rascal.tab.c"
     break;
 
   case 60: /* expressao_simples: expressao_simples TK_ADD termo  */
-#line 372 "rascal.y"
+#line 373 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::Add, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1699 "rascal.tab.c"
+#line 1700 "rascal.tab.c"
     break;
 
   case 61: /* expressao_simples: expressao_simples TK_SUB termo  */
-#line 376 "rascal.y"
+#line 377 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::Sub, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1707 "rascal.tab.c"
+#line 1708 "rascal.tab.c"
     break;
 
   case 62: /* expressao_simples: expressao_simples TK_OR termo  */
-#line 380 "rascal.y"
+#line 381 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::Or, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1715 "rascal.tab.c"
+#line 1716 "rascal.tab.c"
     break;
 
   case 63: /* termo: fator  */
-#line 386 "rascal.y"
+#line 387 "rascal.y"
             { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1721 "rascal.tab.c"
+#line 1722 "rascal.tab.c"
     break;
 
   case 64: /* termo: termo TK_MUL fator  */
-#line 388 "rascal.y"
+#line 389 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::Mul, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1729 "rascal.tab.c"
+#line 1730 "rascal.tab.c"
     break;
 
   case 65: /* termo: termo TK_DIV fator  */
-#line 392 "rascal.y"
+#line 393 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::Div, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1737 "rascal.tab.c"
+#line 1738 "rascal.tab.c"
     break;
 
   case 66: /* termo: termo TK_AND fator  */
-#line 396 "rascal.y"
+#line 397 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoBinaria(OperadorBinario::And, (yyvsp[-2].ptr_expr), (yyvsp[0].ptr_expr));
     }
-#line 1745 "rascal.tab.c"
+#line 1746 "rascal.tab.c"
     break;
 
   case 67: /* fator: variavel  */
-#line 402 "rascal.y"
+#line 403 "rascal.y"
                { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1751 "rascal.tab.c"
+#line 1752 "rascal.tab.c"
     break;
 
   case 68: /* fator: NUM  */
-#line 403 "rascal.y"
+#line 404 "rascal.y"
           { (yyval.ptr_expr) = new IntConstExpr((yyvsp[0].ival)); }
-#line 1757 "rascal.tab.c"
+#line 1758 "rascal.tab.c"
     break;
 
   case 69: /* fator: logico  */
-#line 404 "rascal.y"
+#line 405 "rascal.y"
              { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1763 "rascal.tab.c"
+#line 1764 "rascal.tab.c"
     break;
 
   case 70: /* fator: chamada_geral  */
-#line 405 "rascal.y"
+#line 406 "rascal.y"
                     { (yyval.ptr_expr) = (yyvsp[0].ptr_expr); }
-#line 1769 "rascal.tab.c"
+#line 1770 "rascal.tab.c"
     break;
 
   case 71: /* fator: TK_NOT fator  */
-#line 407 "rascal.y"
+#line 408 "rascal.y"
     {
         (yyval.ptr_expr) = new ExpressaoUnaria(OperadorUnario::Not, (yyvsp[0].ptr_expr));
     }
-#line 1777 "rascal.tab.c"
+#line 1778 "rascal.tab.c"
     break;
 
   case 72: /* fator: TK_ABREPAR expressao TK_FECHAPAR  */
-#line 410 "rascal.y"
+#line 411 "rascal.y"
                                        { (yyval.ptr_expr) = (yyvsp[-1].ptr_expr); }
-#line 1783 "rascal.tab.c"
+#line 1784 "rascal.tab.c"
     break;
 
   case 73: /* variavel: ID  */
-#line 414 "rascal.y"
+#line 415 "rascal.y"
          { (yyval.ptr_expr) = new VarExpr((yyvsp[0].sval)); }
-#line 1789 "rascal.tab.c"
+#line 1790 "rascal.tab.c"
     break;
 
   case 74: /* logico: TK_FALSE  */
-#line 418 "rascal.y"
+#line 419 "rascal.y"
                { (yyval.ptr_expr) = new BoolConstExpr(ValorBool::False); }
-#line 1795 "rascal.tab.c"
+#line 1796 "rascal.tab.c"
     break;
 
   case 75: /* logico: TK_TRUE  */
-#line 419 "rascal.y"
+#line 420 "rascal.y"
                { (yyval.ptr_expr) = new BoolConstExpr(ValorBool::True); }
-#line 1801 "rascal.tab.c"
+#line 1802 "rascal.tab.c"
     break;
 
   case 76: /* chamada_geral: ID TK_ABREPAR lista_expressoes TK_FECHAPAR  */
-#line 424 "rascal.y"
+#line 425 "rascal.y"
     {
         ChamadaFuncao* call = new ChamadaFuncao((yyvsp[-3].sval));
         call->args = *(yyvsp[-1].vec_expr);
         delete (yyvsp[-1].vec_expr);
         (yyval.ptr_expr) = call;
     }
-#line 1812 "rascal.tab.c"
+#line 1813 "rascal.tab.c"
     break;
 
 
-#line 1816 "rascal.tab.c"
+#line 1817 "rascal.tab.c"
 
       default: break;
     }
@@ -2005,7 +2006,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 433 "rascal.y"
+#line 434 "rascal.y"
 
 
 void yyerror(const char *s) {
@@ -2026,6 +2027,15 @@ int main(int argc, char **argv) {
     if (raiz) {
         std::cout << "--- AST GERADA COM SUCESSO ---" << std::endl;
         raiz->print();
+
+        AnalisadorSemantico semantico;
+        if (semantico.analyze(raiz)) {
+            std::cout << "--- ANALISE SEMANTICA: SUCESSO! ---" << std::endl;
+            // Aqui chamaremos o gerador de código depois
+        } else {
+            std::cerr << "--- ANALISE SEMANTICA: FALHOU COM ERROS ---" << std::endl;
+        }
+
         delete raiz;
     }
 

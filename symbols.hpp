@@ -4,7 +4,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <iostream>
 
 enum Categoria { CAT_VAR, CAT_PARAM, CAT_PROC, CAT_FUNC, CAT_PROGRAM };
 enum TipoDado { TIPO_INT, TIPO_BOOL, TIPO_VAZIO, TIPO_DESCONHECIDO };
@@ -15,8 +14,10 @@ struct Simbolo {
     TipoDado tipo;
     int offset; // vai usar pra MEPA DEPOIS
 
-    Simbolo(std::string n, Categoria c, TipoDado t, int o = 0) 
-        : name(n), categoria(c), tipo(t), offset(o) {}
+    std::vector<TipoDado> params;
+
+    Simbolo(std::string n, Categoria c, TipoDado t, int o = 0, std::vector<TipoDado> p = {}) 
+        : name(n), categoria(c), tipo(t), offset(o), params(p) {}
 };
 
 class TabelaDeSimbolos{
@@ -32,16 +33,10 @@ public:
     void enterScope();
     void exitScope();
     
-    bool insert(std::string name, Categoria cat, TipoDado type);
-    Simbolo* lookup(std::string name); // Busca do escopo atual até o global
+    bool insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params = {});
+    Simbolo* lookup(std::string name);
 
     void print();
 };
 
 #endif
-
-
-
-
-
-
