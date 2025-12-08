@@ -12,7 +12,8 @@ struct Simbolo {
     std::string name;
     Categoria categoria;
     TipoDado tipo;
-    int offset; // vai usar pra MEPA DEPOIS
+    int offset;
+    std::string label;
 
     std::vector<TipoDado> params;
 
@@ -33,8 +34,10 @@ public:
     void enterScope();
     void exitScope();
     
-    bool insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params = {});
+    bool insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params = {}, int manual_offset = -999);
     Simbolo* lookup(std::string name);
+    // retorna o nivel lxeico onde o simbolo foi achado
+    int getLevel(std::string name);
 
     void print();
 };

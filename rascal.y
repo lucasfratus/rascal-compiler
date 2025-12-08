@@ -8,6 +8,7 @@
 #include <string>
 #include "ast.hpp"
 #include "semantico.hpp"
+#include "gerador.hpp"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -449,19 +450,31 @@ int main(int argc, char **argv) {
     yyparse();
 
     if (raiz) {
-        std::cout << "--- AST GERADA COM SUCESSO ---" << std::endl;
-        raiz->print();
-
+        // Análise Semântica
         AnalisadorSemantico semantico;
         if (semantico.analyze(raiz)) {
-            std::cout << "--- ANALISE SEMANTICA: SUCESSO! ---" << std::endl;
-            // Aqui chamaremos o gerador de código depois
+            // Se passou na semântica, gera código
+            // Redirecionando cout para um arquivo se necessário, 
+            // ou apenas imprimindo no stdout conforme especificação
+            
+            // Dica: A especificação pede "nome do arquivo de saída" como argumento.
+            // Se quiser salvar em arquivo:
+            /*
+            std::ofstream out(argv[2]);
+            std::streambuf *coutbuf = std::cout.rdbuf();
+            std::cout.rdbuf(out.rdbuf());
+            */
+            
+            GeradorCodigo gerador;
+            gerador.gerar(raiz);
+            
+            // std::cout.rdbuf(coutbuf); // Restaura cout
         } else {
-            std::cerr << "--- ANALISE SEMANTICA: FALHOU COM ERROS ---" << std::endl;
+            std::cerr << "Erros semanticos encontrados. Compilacao abortada." << std::endl;
+            delete raiz;
+            return 1;
         }
-
         delete raiz;
     }
-
     return 0;
 }

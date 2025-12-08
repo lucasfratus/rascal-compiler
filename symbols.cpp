@@ -23,16 +23,24 @@ void TabelaDeSimbolos::exitScope() {
     scopes.pop_back();
 }
 
-bool TabelaDeSimbolos::insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params) {
+bool TabelaDeSimbolos::insert(std::string name, Categoria cat, TipoDado type, std::vector<TipoDado> params, int manual_offset) {
     if (scopes.back().count(name)) {
         return false; 
     }
 
     int offset = 0;
-    if (scopes.size() == 1) { 
-        offset = var_offset_global++;
-    } else {
-        offset = var_offset_local++;
+
+    if (manual_offset != -999) {
+        offset = manual_offset;
+    } 
+    else {
+        if (cat == CAT_VAR) {
+            if (scopes.size() == 1) { 
+                offset = var_offset_global++;
+            } else {
+                offset = var_offset_local++;
+            }
+        }
     }
 
     Simbolo* sym = new Simbolo(name, cat, type, offset, params);
@@ -55,4 +63,13 @@ void TabelaDeSimbolos::print() {
         std::cout << "Name: " << val->name << " | Type: " << val->tipo << " | Off: " << val->offset << std::endl;
     }
     std::cout << "=========================================" << std::endl;
+}
+
+int TabelaDeSimbolos::getLevel(std::string name) {
+    for (int i = scopes.size() - 1; i >= 0; i--) {
+        if (scopes[i].count(name)) {
+            return i;
+        }
+    }
+    return -1;
 }

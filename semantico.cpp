@@ -63,6 +63,18 @@ void AnalisadorSemantico::visitaDeclSub(DeclaracaoSub* d) {
 
     tabela.enterScope();
 
+    int param_offset = -5; 
+
+    for (auto p : d->parametros) {
+        TipoDado tParam = mapType(p->tipo);
+        for (const auto& nomeParam : p->ids) {
+            if (!tabela.insert(nomeParam, CAT_PARAM, tParam, {}, param_offset)) {
+                error("Parametro '" + nomeParam + "' duplicado.");
+            }
+            param_offset--; 
+        }
+    }
+
     std::string func_antiga = nome_funcao_atual;
     TipoDado tipo_antigo = funcao_atual_tipo_retorno;
     bool retorno_antigo = retorno_encontrado;
@@ -70,16 +82,6 @@ void AnalisadorSemantico::visitaDeclSub(DeclaracaoSub* d) {
     nome_funcao_atual = d->nome;
     funcao_atual_tipo_retorno = tipoRetorno;
     retorno_encontrado = false;
-
-
-    for (auto p : d->parametros) {
-        TipoDado tParam = mapType(p->tipo);
-        for (const auto& nomeParam : p->ids) {
-            if (!tabela.insert(nomeParam, CAT_PARAM, tParam)) {
-                error("Parametro '" + nomeParam + "' duplicado.");
-            }
-        }
-    }
 
     if (d->corpo) {
         for (auto v : d->corpo->locais) visitaDeclVar(v);
@@ -98,6 +100,7 @@ void AnalisadorSemantico::visitaDeclSub(DeclaracaoSub* d) {
 }
 
 void AnalisadorSemantico::visitaComando(Comando* c) {
+    // usa dynamic_cast aqui pq facilita p converter o ponteiro base Comando* pro derivado
     if (auto cmd = dynamic_cast<AtribuicaoCmd*>(c)) visitaAtribuicao(cmd);
     else if (auto cmd = dynamic_cast<IfCmd*>(c)) visitaIf(cmd);
     else if (auto cmd = dynamic_cast<WhileCmd*>(c)) visitaWhile(cmd);
