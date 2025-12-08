@@ -439,36 +439,35 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char **argv) {
-    if (argc > 1) {
-        yyin = fopen(argv[1], "r");
-        if (!yyin) {
-            perror(argv[1]);
-            return 1;
-        }
+    if (argc < 3) {
+        fprintf(stderr, "Uso: ./rascal <arquivo_entrada.ras> <arquivo_saida.mepa>\n");
+        return 1;
     }
-    
+
+    yyin = fopen(argv[1], "r");
+    if (!yyin) {
+        perror(argv[1]);
+        return 1;
+    }
+
     yyparse();
+    
+    if (yyin) fclose(yyin);
 
     if (raiz) {
-        // Análise Semântica
         AnalisadorSemantico semantico;
         if (semantico.analyze(raiz)) {
-            // Se passou na semântica, gera código
-            // Redirecionando cout para um arquivo se necessário, 
-            // ou apenas imprimindo no stdout conforme especificação
-            
-            // Dica: A especificação pede "nome do arquivo de saída" como argumento.
-            // Se quiser salvar em arquivo:
-            /*
-            std::ofstream out(argv[2]);
-            std::streambuf *coutbuf = std::cout.rdbuf();
-            std::cout.rdbuf(out.rdbuf());
-            */
-            
+            if (freopen(argv[2], "w", stdout) == NULL) {
+                perror(argv[2]);
+                delete raiz;
+                return 1;
+            }
+
             GeradorCodigo gerador;
             gerador.gerar(raiz);
             
-            // std::cout.rdbuf(coutbuf); // Restaura cout
+            fclose(stdout);
+
         } else {
             std::cerr << "Erros semanticos encontrados. Compilacao abortada." << std::endl;
             delete raiz;
