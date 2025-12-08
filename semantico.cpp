@@ -100,14 +100,31 @@ void AnalisadorSemantico::visitaDeclSub(DeclaracaoSub* d) {
 }
 
 void AnalisadorSemantico::visitaComando(Comando* c) {
-    // usa dynamic_cast aqui pq facilita p converter o ponteiro base Comando* pro derivado
-    if (auto cmd = dynamic_cast<AtribuicaoCmd*>(c)) visitaAtribuicao(cmd);
-    else if (auto cmd = dynamic_cast<IfCmd*>(c)) visitaIf(cmd);
-    else if (auto cmd = dynamic_cast<WhileCmd*>(c)) visitaWhile(cmd);
-    else if (auto cmd = dynamic_cast<LeituraCmd*>(c)) visitaLeitura(cmd);
-    else if (auto cmd = dynamic_cast<EscritaCmd*>(c)) visitaEscrita(cmd);
-    else if (auto cmd = dynamic_cast<ChamadaProcedimentoCmd*>(c)) visitaChamadaProc(cmd);
-    else if (auto cmd = dynamic_cast<ComandoComposto*>(c)) visitaComandoComposto(cmd);
+    if (!c) return;
+
+    switch (c->tipo_cmd) {
+        case TipoComando::CMD_ATRIB:
+            visitaAtribuicao((AtribuicaoCmd*)c);
+            break;
+        case TipoComando::CMD_IF:
+            visitaIf((IfCmd*)c);
+            break;
+        case TipoComando::CMD_WHILE:
+            visitaWhile((WhileCmd*)c);
+            break;
+        case TipoComando::CMD_READ:
+            visitaLeitura((LeituraCmd*)c);
+            break;
+        case TipoComando::CMD_WRITE:
+            visitaEscrita((EscritaCmd*)c);
+            break;
+        case TipoComando::CMD_CHAMADA:
+            visitaChamadaProc((ChamadaProcedimentoCmd*)c);
+            break;
+        case TipoComando::CMD_COMPOSTO:
+            visitaComandoComposto((ComandoComposto*)c);
+            break;
+    }
 }
 
 void AnalisadorSemantico::visitaAtribuicao(AtribuicaoCmd* c) {
@@ -224,12 +241,22 @@ void AnalisadorSemantico::visitaComandoComposto(ComandoComposto* c) {
 }
 
 TipoDado AnalisadorSemantico::visitaExpressao(Expressao* e) {
-    if (auto ex = dynamic_cast<IntConstExpr*>(e)) return TIPO_INT;
-    if (auto ex = dynamic_cast<BoolConstExpr*>(e)) return TIPO_BOOL;
-    if (auto ex = dynamic_cast<VarExpr*>(e)) return visitaVar(ex);
-    if (auto ex = dynamic_cast<ExpressaoBinaria*>(e)) return visitaBinaria(ex);
-    if (auto ex = dynamic_cast<ExpressaoUnaria*>(e)) return visitaUnaria(ex);
-    if (auto ex = dynamic_cast<ChamadaFuncao*>(e)) return visitaChamadaFunc(ex);
+    if (!e) return TIPO_DESCONHECIDO;
+
+    switch (e->tipo_expr) {
+        case TipoExpressao::EXP_INT:
+            return TIPO_INT;
+        case TipoExpressao::EXP_BOOL:
+            return TIPO_BOOL;
+        case TipoExpressao::EXP_VAR:
+            return visitaVar((VarExpr*)e);
+        case TipoExpressao::EXP_BINARIA:
+            return visitaBinaria((ExpressaoBinaria*)e);
+        case TipoExpressao::EXP_UNARIA:
+            return visitaUnaria((ExpressaoUnaria*)e);
+        case TipoExpressao::EXP_CHAMADA:
+            return visitaChamadaFunc((ChamadaFuncao*)e);
+    }
     return TIPO_DESCONHECIDO;
 }
 

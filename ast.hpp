@@ -18,6 +18,13 @@ enum class OperadorUnario {
     Negativo, Not
 };
 
+enum class TipoComando {
+    CMD_ATRIB, CMD_COMPOSTO, CMD_CHAMADA, CMD_IF, CMD_WHILE, CMD_READ, CMD_WRITE
+};
+
+enum class TipoExpressao {
+    EXP_VAR, EXP_INT, EXP_BOOL, EXP_BINARIA, EXP_UNARIA, EXP_CHAMADA
+};
 
 class NoAST {
 public:
@@ -25,8 +32,6 @@ public:
     virtual void print(int indent = 0) const = 0;
 };
 
-
-// Programa
 class Bloco;
 
 class Programa : public NoAST {
@@ -41,9 +46,6 @@ public:
 
     void print(int indent = 0) const override;
 };
-
-
-// Bloco
 
 class DeclaracaoVar;
 class DeclaracaoSub;
@@ -60,8 +62,6 @@ public:
     void print(int indent = 0) const override;
 };
 
-
-// Declaracao de Variaveis
 class DeclaracaoVar : public NoAST {
 public:
     TipoVar tipo;
@@ -73,8 +73,6 @@ public:
     void print(int indent = 0) const override;
 };
 
-
-// Subrotinas
 class BlocoSub;
 
 class DeclaracaoSub : public NoAST {
@@ -113,11 +111,13 @@ public:
     void print(int indent = 0) const override;
 };
 
-
-// Comandos
 class Expressao;
 
-class Comando : public NoAST {};
+class Comando : public NoAST {
+public:
+    TipoComando tipo_cmd; 
+    Comando(TipoComando t) : tipo_cmd(t) {}
+};
 
 class AtribuicaoCmd : public Comando {
 public:
@@ -125,7 +125,7 @@ public:
     Expressao* expr;
 
     AtribuicaoCmd(const std::string& i, Expressao* e)
-        : id(i), expr(e) {}
+        : Comando(TipoComando::CMD_ATRIB), id(i), expr(e) {}
 
     ~AtribuicaoCmd();
 
@@ -136,7 +136,8 @@ class ComandoComposto : public Comando {
 public:
     std::vector<Comando*> comandos;
 
-    ComandoComposto(const std::vector<Comando*>& c) : comandos(c) {}
+    ComandoComposto(const std::vector<Comando*>& c) 
+        : Comando(TipoComando::CMD_COMPOSTO), comandos(c) {}
     
     ~ComandoComposto();
 
@@ -148,7 +149,8 @@ public:
     std::string id;
     std::vector<Expressao*> args;
 
-    ChamadaProcedimentoCmd(const std::string& i) : id(i) {}
+    ChamadaProcedimentoCmd(const std::string& i) 
+        : Comando(TipoComando::CMD_CHAMADA), id(i) {}
     ~ChamadaProcedimentoCmd();
 
     void print(int indent = 0) const override;
@@ -161,7 +163,7 @@ public:
     Comando* elseCmd;
 
     IfCmd(Expressao* c, Comando* t, Comando* e) 
-        : cond(c), thenCmd(t), elseCmd(e) {}
+        : Comando(TipoComando::CMD_IF), cond(c), thenCmd(t), elseCmd(e) {}
 
     ~IfCmd();
 
@@ -174,7 +176,7 @@ public:
     Comando* corpo;
 
     WhileCmd(Expressao* cd, Comando* crp)
-        : cond(cd), corpo(crp) {}
+        : Comando(TipoComando::CMD_WHILE), cond(cd), corpo(crp) {}
 
     ~WhileCmd();
 
@@ -186,7 +188,7 @@ public:
     std::vector<std::string> ids;
 
     LeituraCmd(const std::vector<std::string>& v)
-        : ids(v) {}
+        : Comando(TipoComando::CMD_READ), ids(v) {}
     
     void print(int indent = 0) const override;
 };
@@ -195,20 +197,24 @@ class EscritaCmd : public Comando {
 public:
     std::vector<Expressao*> exprs;
 
+    EscritaCmd() : Comando(TipoComando::CMD_WRITE) {}
+
     ~EscritaCmd();
 
     void print(int indent = 0) const override;
 };
 
-
-// Expressoes
-class Expressao : public NoAST {};
+class Expressao : public NoAST {
+public:
+    TipoExpressao tipo_expr; 
+    Expressao(TipoExpressao t) : tipo_expr(t) {}
+};
 
 class VarExpr : public Expressao {
 public:
     std::string id;
 
-    VarExpr(const std::string& i) : id(i) {}
+    VarExpr(const std::string& i) : Expressao(TipoExpressao::EXP_VAR), id(i) {}
 
     void print(int indent = 0) const override;
 };
@@ -217,7 +223,7 @@ class IntConstExpr : public Expressao {
 public:
     int valor;
 
-    IntConstExpr(int v) : valor(v) {}
+    IntConstExpr(int v) : Expressao(TipoExpressao::EXP_INT), valor(v) {}
 
     void print(int indent = 0) const override;
 };
@@ -226,7 +232,7 @@ class BoolConstExpr : public Expressao {
 public:
     ValorBool valor;
 
-    BoolConstExpr(ValorBool v) : valor(v) {}
+    BoolConstExpr(ValorBool v) : Expressao(TipoExpressao::EXP_BOOL), valor(v) {}
 
     void print(int indent = 0) const override;
 };
@@ -238,7 +244,7 @@ public:
     Expressao* dir;
 
     ExpressaoBinaria(OperadorBinario o, Expressao* e, Expressao* d)
-        : op(o), esq(e), dir(d) {}
+        : Expressao(TipoExpressao::EXP_BINARIA), op(o), esq(e), dir(d) {}
 
     ~ExpressaoBinaria();
 
@@ -251,7 +257,7 @@ public:
     Expressao* expr;
 
     ExpressaoUnaria(OperadorUnario o, Expressao* e)
-        : op(o), expr(e) {}
+        : Expressao(TipoExpressao::EXP_UNARIA), op(o), expr(e) {}
 
     ~ExpressaoUnaria() { delete expr; }
 
@@ -263,7 +269,8 @@ public:
     std::string id;
     std::vector<Expressao*> args;
 
-    ChamadaFuncao(const std::string& i) : id(i) {}
+    ChamadaFuncao(const std::string& i) 
+        : Expressao(TipoExpressao::EXP_CHAMADA), id(i) {}
     ~ChamadaFuncao();
 
     void print(int indent = 0) const override;

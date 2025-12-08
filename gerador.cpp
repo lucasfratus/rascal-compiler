@@ -125,13 +125,31 @@ void GeradorCodigo::visitaDeclSub(DeclaracaoSub* d) {
 }
 
 void GeradorCodigo::visitaComando(Comando* c) {
-    if (auto cmd = dynamic_cast<AtribuicaoCmd*>(c)) visitaAtribuicao(cmd);
-    else if (auto cmd = dynamic_cast<IfCmd*>(c)) visitaIf(cmd);
-    else if (auto cmd = dynamic_cast<WhileCmd*>(c)) visitaWhile(cmd);
-    else if (auto cmd = dynamic_cast<LeituraCmd*>(c)) visitaLeitura(cmd);
-    else if (auto cmd = dynamic_cast<EscritaCmd*>(c)) visitaEscrita(cmd);
-    else if (auto cmd = dynamic_cast<ChamadaProcedimentoCmd*>(c)) visitaChamadaProc(cmd);
-    else if (auto cmd = dynamic_cast<ComandoComposto*>(c)) visitaComandoComposto(cmd);
+    if (!c) return;
+
+    switch (c->tipo_cmd) {
+        case TipoComando::CMD_ATRIB:
+            visitaAtribuicao((AtribuicaoCmd*)c);
+            break;
+        case TipoComando::CMD_IF:
+            visitaIf((IfCmd*)c);
+            break;
+        case TipoComando::CMD_WHILE:
+            visitaWhile((WhileCmd*)c);
+            break;
+        case TipoComando::CMD_READ:
+            visitaLeitura((LeituraCmd*)c);
+            break;
+        case TipoComando::CMD_WRITE:
+            visitaEscrita((EscritaCmd*)c);
+            break;
+        case TipoComando::CMD_CHAMADA:
+            visitaChamadaProc((ChamadaProcedimentoCmd*)c);
+            break;
+        case TipoComando::CMD_COMPOSTO:
+            visitaComandoComposto((ComandoComposto*)c);
+            break;
+    }
 }
 
 void GeradorCodigo::visitaAtribuicao(AtribuicaoCmd* c) {
@@ -214,12 +232,28 @@ void GeradorCodigo::visitaChamadaProc(ChamadaProcedimentoCmd* c) {
 }
 
 void GeradorCodigo::visitaExpressao(Expressao* e) {
-    if (auto ex = dynamic_cast<IntConstExpr*>(e)) visitaConst(ex->valor);
-    else if (auto ex = dynamic_cast<BoolConstExpr*>(e)) visitaConst(ex->valor == ValorBool::True ? 1 : 0);
-    else if (auto ex = dynamic_cast<VarExpr*>(e)) visitaVar(ex);
-    else if (auto ex = dynamic_cast<ExpressaoBinaria*>(e)) visitaBinaria(ex);
-    else if (auto ex = dynamic_cast<ExpressaoUnaria*>(e)) visitaUnaria(ex);
-    else if (auto ex = dynamic_cast<ChamadaFuncao*>(e)) visitaChamadaFunc(ex);
+    if (!e) return;
+
+    switch (e->tipo_expr) {
+        case TipoExpressao::EXP_INT:
+            visitaConst(((IntConstExpr*)e)->valor);
+            break;
+        case TipoExpressao::EXP_BOOL:
+            visitaConst(((BoolConstExpr*)e)->valor == ValorBool::True ? 1 : 0);
+            break;
+        case TipoExpressao::EXP_VAR:
+            visitaVar((VarExpr*)e);
+            break;
+        case TipoExpressao::EXP_BINARIA:
+            visitaBinaria((ExpressaoBinaria*)e);
+            break;
+        case TipoExpressao::EXP_UNARIA:
+            visitaUnaria((ExpressaoUnaria*)e);
+            break;
+        case TipoExpressao::EXP_CHAMADA:
+            visitaChamadaFunc((ChamadaFuncao*)e);
+            break;
+    }
 }
 
 void GeradorCodigo::visitaConst(int val) {
