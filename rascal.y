@@ -268,11 +268,13 @@ lista_comandos
 
 comando
     : atribuicao { $$ = $1; }
-    | chamada_geral 
-    { 
-        ChamadaFuncao* call = dynamic_cast<ChamadaFuncao*>($1);
+    | chamada_geral {
+        ChamadaFuncao* call = (ChamadaFuncao*)$1;
+        
         $$ = new ChamadaProcedimentoCmd(call->id);
         ((ChamadaProcedimentoCmd*)$$)->args = call->args;
+        call->args.clear();
+        delete call; 
     }
     | condicional { $$ = $1; }
     | repeticao { $$ = $1; }
