@@ -437,7 +437,7 @@ chamada_geral
 %%
 
 void yyerror(const char *s){
-    printf("Erro Sintático na linha %d: %s\n", yylineno, s);
+    printf("ERRO SINTÁTICO na linha %d: %s\n", yylineno, s);
 }
 
 
@@ -458,6 +458,9 @@ int main(int argc, char **argv) {
     if (yyin) fclose(yyin);
 
     if (raiz) {
+        std::cout << "\nAST\n\n";
+        raiz->print(0);
+        std::cout << "\n"; 
         AnalisadorSemantico semantico;
         if (semantico.analyze(raiz)) {
             if (freopen(argv[2], "w", stdout) == NULL) {
