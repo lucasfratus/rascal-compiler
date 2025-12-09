@@ -1,23 +1,36 @@
 #include "gerador.hpp"
 #include <iostream>
 
-GeradorCodigo::GeradorCodigo() : contador_geral(0) {}
+static void emit(const std::string& s) {
+    // 4 caracteres do "label" + 1 do ':' para indentação 
+    std::cout << "     " << s << std::endl;
+}
+
+static void emitLabel(const std::string& s) {
+    std::cout << s << ": NADA" << std::endl;
+}
+
+GeradorCodigo::GeradorCodigo() : contador_geral(1), nivel_atual(0) {}
 
 std::string GeradorCodigo::newLabel() {
-    int n = ++contador_geral;
-    std::string num = std::to_string(n);
-
-    if (n < 10) {
-        num = "0" + num;
-    }
-    
-    return "R" + num;
+    int n = contador_geral++;
+    if (n < 10) return "R0" + std::to_string(n);
+    return "R" + std::to_string(n);
 }
 
 void GeradorCodigo::gerar(Programa* prog) {
     if (!prog) return;
 
-    std::cout << "INPP" << std::endl;
+    if (prog->bloco->subrotinas.empty()) {
+        // não tem subrotina → primeiro label é R00
+        contador_geral = 0;
+    } else {
+        // tem subrotina → R00 é do main, subrotinas começam em R01
+        contador_geral = 1;
+    }
+    
+    nivel_atual = 0;
+    emit("INPP");
     
     tabela.insert(prog->nome, CAT_PROGRAM, TIPO_VAZIO);
 
@@ -31,11 +44,11 @@ void GeradorCodigo::gerar(Programa* prog) {
     }
 
     if (count_globais > 0) {
-        std::cout << "AMEM " << count_globais << std::endl;
+        emit("AMEM " + std::to_string(count_globais));
     }
 
     if (!prog->bloco->subrotinas.empty()) {
-        std::cout << "DSVS R00" << std::endl; 
+        emit("DSVS R00");  
     }
 
     for (auto sub : prog->bloco->subrotinas) {
@@ -43,7 +56,7 @@ void GeradorCodigo::gerar(Programa* prog) {
     }
 
     if (!prog->bloco->subrotinas.empty()) {
-        std::cout << "R00: NADA" << std::endl;
+        emitLabel("R00");
     }
 
     for (auto c : prog->bloco->comandos) {
@@ -51,11 +64,11 @@ void GeradorCodigo::gerar(Programa* prog) {
     }
 
     if (count_globais > 0) {
-        std::cout << "DMEM " << count_globais << std::endl;
+        emit("DMEM " + std::to_string(count_globais));
     }
 
-    std::cout << "PARA" << std::endl; 
-    std::cout << "FIM" << std::endl;
+    emit("PARA");
+    emit("FIM");
 }
 
 void GeradorCodigo::visitaDeclSub(DeclaracaoSub* d) {
@@ -78,10 +91,13 @@ void GeradorCodigo::visitaDeclSub(DeclaracaoSub* d) {
     Simbolo* s = tabela.lookup(d->nome);
     s->label = rotulo;
     
-    int nivel = tabela.getLevel(d->nome); 
+    int nivel_decl = tabela.getLevel(d->nome); 
     
-    std::cout << rotulo << ": NADA" << std::endl;
-    std::cout << "      ENPR " << (nivel + 1) << std::endl; 
+    emitLabel(rotulo);
+    emit("ENPR " + std::to_string(nivel_decl + 1));
+
+    int nivel_antigo = nivel_atual;
+    nivel_atual = nivel_decl + 1;
 
     tabela.enterScope(); 
 
@@ -104,7 +120,7 @@ void GeradorCodigo::visitaDeclSub(DeclaracaoSub* d) {
         }
         
         if (count_locais > 0) {
-            std::cout << "      AMEM " << count_locais << std::endl;
+            emit("AMEM " + std::to_string(count_locais));
         }
 
         for (auto c : d->corpo->comandos) {
@@ -112,16 +128,17 @@ void GeradorCodigo::visitaDeclSub(DeclaracaoSub* d) {
         }
         
         if (count_locais > 0) {
-            std::cout << "      DMEM " << count_locais << std::endl;
+            emit("DMEM " + std::to_string(count_locais));
         }
         
         int n_params = 0;
         for (auto p : d->parametros) n_params += p->ids.size();
         
-        std::cout << "      RTPR " << n_params << std::endl;
+        emit("RTPR " + std::to_string(n_params));
     }
 
     tabela.exitScope();
+    nivel_atual = nivel_antigo;
 }
 
 void GeradorCodigo::visitaComando(Comando* c) {
@@ -161,57 +178,70 @@ void GeradorCodigo::visitaAtribuicao(AtribuicaoCmd* c) {
     if (s->categoria == CAT_FUNC) {
         int n_params = 0;
         n_params = s->params.size();
-        std::cout << "ARMZ " << (k + 1) << ", -" << (5 + n_params) << std::endl;
+        int offset_retorno = -(5 + n_params);
+        emit("ARMZ " + std::to_string(k + 1) + "," + std::to_string(offset_retorno));
     } else {
-        std::cout << "ARMZ " << k << ", " << s->offset << std::endl;
+        emit("ARMZ " + std::to_string(k) + "," + std::to_string(s->offset));
     }
 }
 
 void GeradorCodigo::visitaIf(IfCmd* c) {
-    std::string label_else = newLabel();
-    std::string label_fim = newLabel();
+    // CASO 1: IF sem ELSE
+    if (c->elseCmd == nullptr) {
+        std::string label_fim = newLabel();
 
-    visitaExpressao(c->cond);
-    std::cout << "DSVF " << label_else << std::endl;
+        visitaExpressao(c->cond);
+        emit("DSVF " + label_fim);  
 
-    visitaComando(c->thenCmd);
-    std::cout << "DSVS " << label_fim << std::endl;
+        visitaComando(c->thenCmd);
 
-    std::cout << label_else << ": NADA" << std::endl;
-    if (c->elseCmd) {
-        visitaComando(c->elseCmd);
+        emitLabel(label_fim);
     }
-    
-    std::cout << label_fim << ": NADA" << std::endl;
+    // IF com ELSE
+    else {
+        std::string label_fim  = newLabel();
+        std::string label_else = newLabel();
+
+        visitaExpressao(c->cond);
+        emit("DSVF " + label_else);  
+  
+        visitaComando(c->thenCmd);
+        emit("DSVS " + label_fim);   
+
+        emitLabel(label_else);
+        visitaComando(c->elseCmd);
+
+        emitLabel(label_fim);
+    }
 }
 
 void GeradorCodigo::visitaWhile(WhileCmd* c) {
     std::string label_inicio = newLabel();
     std::string label_fim = newLabel();
 
-    std::cout << label_inicio << ": NADA" << std::endl;
+    emitLabel(label_inicio);
     visitaExpressao(c->cond);
-    std::cout << "DSVF " << label_fim << std::endl;
+    emit("DSVF " + label_fim);
 
     visitaComando(c->corpo);
-    std::cout << "DSVS " << label_inicio << std::endl;
+    emit("DSVS " + label_inicio);
 
-    std::cout << label_fim << ": NADA" << std::endl;
+    emitLabel(label_fim);  
 }
 
 void GeradorCodigo::visitaLeitura(LeituraCmd* c) {
     for (const auto& id : c->ids) {
-        std::cout << "LEIT" << std::endl;
+        emit("LEIT");
         Simbolo* s = tabela.lookup(id);
         int k = tabela.getLevel(id);
-        std::cout << "ARMZ " << k << ", " << s->offset << std::endl;
+        emit("ARMZ " + std::to_string(k) + "," + std::to_string(s->offset));
     }
 }
 
 void GeradorCodigo::visitaEscrita(EscritaCmd* c) {
     for (auto expr : c->exprs) {
         visitaExpressao(expr);
-        std::cout << "IMPR" << std::endl;
+        emit("IMPR");
     }
 }
 
@@ -222,13 +252,12 @@ void GeradorCodigo::visitaComandoComposto(ComandoComposto* c) {
 }
 
 void GeradorCodigo::visitaChamadaProc(ChamadaProcedimentoCmd* c) {
-    for (auto arg : c->args) {
-        visitaExpressao(arg);
+    for (int i = c->args.size() - 1; i >= 0; i--) {
+        visitaExpressao(c->args[i]);
     }
 
     Simbolo* s = tabela.lookup(c->id);
-    int k = tabela.getLevel(c->id);
-    std::cout << "CHPR " << s->label << ", " << k << std::endl;
+    emit("CHPR " + s->label + "," + std::to_string(nivel_atual));
 }
 
 void GeradorCodigo::visitaExpressao(Expressao* e) {
@@ -257,13 +286,13 @@ void GeradorCodigo::visitaExpressao(Expressao* e) {
 }
 
 void GeradorCodigo::visitaConst(int val) {
-    std::cout << "CRCT " << val << std::endl;
+    emit("CRCT " + std::to_string(val));
 }
 
 void GeradorCodigo::visitaVar(VarExpr* e) {
     Simbolo* s = tabela.lookup(e->id);
     int k = tabela.getLevel(e->id);
-    std::cout << "CRVL " << k << ", " << s->offset << std::endl;
+    emit("CRVL " + std::to_string(k) + "," + std::to_string(s->offset));
 }
 
 void GeradorCodigo::visitaBinaria(ExpressaoBinaria* e) {
@@ -271,35 +300,58 @@ void GeradorCodigo::visitaBinaria(ExpressaoBinaria* e) {
     visitaExpressao(e->dir);
 
     switch (e->op) {
-        case OperadorBinario::Add: std::cout << "SOMA" << std::endl; break;
-        case OperadorBinario::Sub: std::cout << "SUBT" << std::endl; break;
-        case OperadorBinario::Mul: std::cout << "MULT" << std::endl; break;
-        case OperadorBinario::Div: std::cout << "DIVI" << std::endl; break;
-        case OperadorBinario::And: std::cout << "CONJ" << std::endl; break;
-        case OperadorBinario::Or:  std::cout << "DISJ" << std::endl; break;
-        case OperadorBinario::Equal:    std::cout << "CMIG" << std::endl; break;
-        case OperadorBinario::NotEqual: std::cout << "CMDG" << std::endl; break;
-        case OperadorBinario::Less:     std::cout << "CMME" << std::endl; break;
-        case OperadorBinario::LessEq:   std::cout << "CMEG" << std::endl; break;
-        case OperadorBinario::Greater:  std::cout << "CMMA" << std::endl; break;
-        case OperadorBinario::GreaterEq:std::cout << "CMAG" << std::endl; break;
+        case OperadorBinario::Add: 
+            emit("SOMA"); 
+            break;
+        case OperadorBinario::Sub:
+            emit("SUBT");
+            break;
+        case OperadorBinario::Mul: 
+            emit("MULT");
+            break;
+        case OperadorBinario::Div: 
+            emit("DIVI");
+            break;
+        case OperadorBinario::And:
+            emit("CONJ");
+            break;
+        case OperadorBinario::Or:  
+            emit("DISJ");
+            break;
+        case OperadorBinario::Equal:    
+            emit("CMIG");
+            break;
+        case OperadorBinario::NotEqual: 
+            emit("CMDG");
+            break;
+        case OperadorBinario::Less:     
+            emit("CMME");
+            break;
+        case OperadorBinario::LessEq:  
+            emit("CMEG");
+            break;
+        case OperadorBinario::Greater: 
+            emit("CMMA");
+            break;
+        case OperadorBinario::GreaterEq: 
+            emit("CMAG");
+            break;
     }
 }
 
 void GeradorCodigo::visitaUnaria(ExpressaoUnaria* e) {
     visitaExpressao(e->expr);
-    if (e->op == OperadorUnario::Negativo) std::cout << "INVR" << std::endl;
-    else if (e->op == OperadorUnario::Not) std::cout << "NEGA" << std::endl;
+    if (e->op == OperadorUnario::Negativo) emit("INVR");
+    else if (e->op == OperadorUnario::Not) emit("NEGA");
 }
 
 void GeradorCodigo::visitaChamadaFunc(ChamadaFuncao* e) {
-    std::cout << "AMEM 1" << std::endl;
+    emit("AMEM 1");
 
-    for (auto arg : e->args) {
-        visitaExpressao(arg);
+    for (int i = e->args.size() - 1; i >= 0; i--) {
+        visitaExpressao(e->args[i]);
     }
 
     Simbolo* s = tabela.lookup(e->id);
-    int k = tabela.getLevel(e->id);
-    std::cout << "CHPR " << s->label << ", " << k << std::endl;
+    emit("CHPR " + s->label + "," + std::to_string(nivel_atual));
 }

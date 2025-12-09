@@ -1,8 +1,0 @@
-program declaracaoDuplicada;
-var x : integer;
-    x : boolean;
-
-begin
-    x := 0;
-    write(x)
-end.

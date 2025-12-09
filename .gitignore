@@ -1,0 +1,40 @@
+# Compilação Bison/Flex
+rascal.tab.c
+rascal.tab.h
+rascal.output
+lex.yy.c
+
+# Objetos e binários
+*.o
+rascal
+
+# Arquivos intermediários do make
+*.d
+*.a
+*.so
+
+# Arquivos temporários de build
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# Dumps, logs, testes
+*.log
+*.tmp
+*.bak
+
+# Arquivos de código MEPA gerados
+*.mepa
+
+# Arquivos do editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Arquivos ocultos de backup
+*~
+*.swp
+*.swo
+
+# Arquivos de entrada e saída de testes
+*.ras

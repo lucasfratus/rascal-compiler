@@ -1,9 +1,0 @@
-program ifSemThen;
-var x : integer;
-begin
-    x := 0;
-    if x = 0
-        write(1)
-    else
-        write(0)
-end.

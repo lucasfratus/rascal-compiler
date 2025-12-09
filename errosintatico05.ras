@@ -1,7 +1,0 @@
-program beginEscritoErrado;
-var x : integer;
-
-begim
-    x := 1;
-    write(x)
-end.

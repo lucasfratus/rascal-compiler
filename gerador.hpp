@@ -9,6 +9,7 @@ class GeradorCodigo {
 private:
     TabelaDeSimbolos tabela;
     int contador_geral;
+    int nivel_atual;
 
     std::string newLabel();
 
