@@ -57,6 +57,8 @@ ID      [a-zA-Z][a-zA-Z0-9_]*
 
 {ESPACO}            { /* ignora */ }
 
-.                   { printf("ERRO LÉXICO na linha %d: símbolo ilegal %c\n", yylineno, yytext[0]); }
+.                   { 
+                    printf("ERRO LÉXICO na linha %d: símbolo ilegal %c\n", yylineno, yytext[0]);
+                    exit(1); }
 
 %%
