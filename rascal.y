@@ -3,7 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ast.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include "ast.hpp"
+#include "semantico.hpp"
+#include "gerador.hpp"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
@@ -13,19 +18,40 @@ void yyerror(const char *s);
 
 int yylex(void);
 
-No* raiz = NULL;
+Programa* raiz = NULL;
 
 %}
 
 %code requires {
-    #include "ast.h"
+    #include "ast.hpp"
+    #include <vector>
 }
 
 %union {
     int ival;
     char *sval;
-    No* node;
+
+    Programa* ptr_programa;
+    Bloco* ptr_bloco;
+    BlocoSub* ptr_bloco_sub;
+    
+    DeclaracaoVar* ptr_decl_var;
+    std::vector<DeclaracaoVar*>* vec_decl_var;
+    
+    DeclaracaoSub* ptr_decl_sub;
+    std::vector<DeclaracaoSub*>* vec_decl_sub;
+    
+    Comando* ptr_comando;
+    std::vector<Comando*>* vec_comando;
+    
+    Expressao* ptr_expr;
+    std::vector<Expressao*>* vec_expr;
+    std::vector<std::string>* vec_str;
+    
+    TipoVar tipo_var;
+    OperadorBinario op_bin;
 }
+
 
 %token <sval> ID
 %token <ival> NUM
@@ -38,15 +64,27 @@ No* raiz = NULL;
 %token TK_ABREPAR TK_FECHAPAR TK_PTVG TK_IGUAL TK_DIF TK_MENOR TK_MENOR_IG
 %token TK_MAIOR TK_MAIOR_IG TK_ADD TK_SUB TK_MUL TK_ATRIB TK_DOISPT TK_VG TK_PT
 
-%type <node> programa bloco possivel_secao_variaveis secao_declaracao_variaveis
-%type <node> declaracao_tipada lista_declaracao_variaveis lista_identificadores tipo
-%type <node> possivel_secao_subrotinas secao_declaracao_subrotinas lista_declaracao_subrotinas
-%type <node> declaracao_subrotina declaracao_procedimento declaracao_funcao
-%type <node> possivel_parametros_formais parametros_formais lista_declaracao_parametros
-%type <node> bloco_subrotina comando_composto lista_comandos comando
-%type <node> atribuicao condicional repeticao leitura escrita
-%type <node> lista_expressoes lista_expressoes_nao_vazia
-%type <node> expressao expressao_simples termo fator variavel logico chamada_geral relacao
+%type <ptr_programa> programa
+%type <ptr_bloco> bloco 
+%type <ptr_bloco_sub> bloco_subrotina
+
+%type <vec_decl_var> possivel_secao_variaveis secao_declaracao_variaveis lista_declaracao_variaveis 
+%type <vec_decl_var> lista_declaracao_parametros
+%type <vec_decl_var> possivel_parametros_formais parametros_formais
+
+%type <ptr_decl_var> declaracao_tipada
+%type <vec_str> lista_identificadores
+%type <tipo_var> tipo
+
+%type <vec_decl_sub> possivel_secao_subrotinas secao_declaracao_subrotinas lista_declaracao_subrotinas
+%type <ptr_decl_sub> declaracao_subrotina declaracao_procedimento declaracao_funcao
+
+%type <vec_comando> comando_composto lista_comandos
+%type <ptr_comando> comando atribuicao condicional repeticao leitura escrita
+
+%type <vec_expr> lista_expressoes lista_expressoes_nao_vazia
+%type <ptr_expr> expressao expressao_simples termo fator variavel logico chamada_geral 
+%type <op_bin> relacao
 
 %nonassoc TK_THEN
 %nonassoc TK_ELSE
@@ -55,24 +93,31 @@ No* raiz = NULL;
 programa
     : TK_PROGRAM ID TK_PTVG bloco TK_PT 
     {
-        raiz = new No(NO_PROGRAMA, $2);
-        raiz->addFilho($4);
+        raiz = new Programa($2, $4);
     }
     ;
 
 bloco
     : possivel_secao_variaveis possivel_secao_subrotinas comando_composto
     {
-        $$ = new No(NO_BLOCO);
-        if($1) $$->addFilho($1);
-        if($2) $$->addFilho($2);
-        $$->addFilho($3);
+        $$ = new Bloco();
+        if ($1) $$->vars = *$1;
+        if ($2) $$->subrotinas = *$2;
+        if ($3) $$->comandos = *$3;
+        
+        delete $1; delete $2; delete $3;
     }
     ;
 
 possivel_secao_variaveis
-    : /* nada */ { $$ = NULL; }
-    | secao_declaracao_variaveis { $$ = $1; }
+    : /* vazio */ 
+    { 
+        $$ = new std::vector<DeclaracaoVar*>(); 
+    }
+    | secao_declaracao_variaveis 
+    { 
+        $$ = $1; 
+    }
     ;
 
 secao_declaracao_variaveis
@@ -83,45 +128,53 @@ secao_declaracao_variaveis
     ;
 
 declaracao_tipada
-    : lista_identificadores TK_DOISPT tipo {
-        $$ = new No(NO_VAR_DECL, "grupo");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    : lista_identificadores TK_DOISPT tipo 
+    {
+        $$ = new DeclaracaoVar($3, *$1);
+        delete $1;
     }
     ;
 
 lista_declaracao_variaveis
-    : declaracao_tipada TK_PTVG {
-        $$ = new No(NO_VAR_DECL); 
-        $$->addFilho($1); 
+    : declaracao_tipada TK_PTVG 
+    {
+        $$ = new std::vector<DeclaracaoVar*>();
+        $$->push_back($1);
     }
-    | lista_declaracao_variaveis declaracao_tipada TK_PTVG {
+    | lista_declaracao_variaveis declaracao_tipada TK_PTVG 
+    {
         $$ = $1;
-        $$->addFilho($2);
+        $$->push_back($2);
     }
     ;
 
 lista_identificadores
-    :
-    ID {
-        $$ = new No(NO_ID, "LISTA_IDS");
-        $$->addFilho(new No(NO_ID, $1));
+    : ID 
+    {
+        $$ = new std::vector<std::string>();
+        $$->push_back($1);
     }
-    | lista_identificadores TK_VG ID {
+    | lista_identificadores TK_VG ID 
+    {
         $$ = $1;
-        $$->addFilho(new No(NO_ID, $3));
+        $$->push_back($3);
     }
     ;
 
 tipo
-    : TK_BOOLEAN { $$ = new No(NO_TIPO, "boolean"); }
-    | TK_INTEGER { $$ = new No(NO_TIPO, "integer"); }
+    : TK_BOOLEAN { $$ = TipoVar::Boolean; }
+    | TK_INTEGER { $$ = TipoVar::Integer; }
     ;
 
 possivel_secao_subrotinas
-    :
-    /* nada */ { $$ = NULL; }
-    | secao_declaracao_subrotinas { $$ = $1; }
+    : /* vazio */ 
+    { 
+        $$ = new std::vector<DeclaracaoSub*>(); 
+    }
+    | secao_declaracao_subrotinas 
+    { 
+        $$ = $1; 
+    }
     ;
 
 secao_declaracao_subrotinas
@@ -129,34 +182,33 @@ secao_declaracao_subrotinas
     ;
 
 lista_declaracao_subrotinas
-    :
-    declaracao_subrotina TK_PTVG {
-        $$ = new No(NO_SUBROTINA, "LISTA_SUBROTINAS");
-        $$->addFilho($1);
+    : declaracao_subrotina TK_PTVG 
+    {
+        $$ = new std::vector<DeclaracaoSub*>();
+        $$->push_back($1);
     }
     | lista_declaracao_subrotinas declaracao_subrotina TK_PTVG
     {
         $$ = $1;
-        $$->addFilho($2);
+        $$->push_back($2);
     }
     ;
 
 declaracao_subrotina
-    :
-    declaracao_procedimento { $$ = $1; }
+    : declaracao_procedimento { $$ = $1; }
     | declaracao_funcao { $$ = $1; }
     ;
 
 declaracao_procedimento
-    : TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina {
-        $$ = new No(NO_SUBROTINA, $2);
-        if($3) $$->addFilho($3);
-        $$->addFilho($5);
+    : TK_PROCEDURE ID possivel_parametros_formais TK_PTVG bloco_subrotina 
+    {
+        $$ = new DeclaracaoSub($2, *$3, $5); 
+        delete $3;
     }
     ;
 
 possivel_parametros_formais
-    : /* nada */ { $$ = NULL; }
+    : /* vazio */ { $$ = new std::vector<DeclaracaoVar*>(); }
     | parametros_formais { $$ = $1; }
     ;
 
@@ -164,32 +216,36 @@ parametros_formais
     : TK_ABREPAR lista_declaracao_parametros TK_FECHAPAR { $$ = $2; }
     ;
 
+/* a estrutura de DeclaracaoVar ta servindo p parametros tbm */
 lista_declaracao_parametros
-    : declaracao_tipada { 
-        $$ = new No(NO_PARAM_LIST, "PARAMETROS");
-        $$->addFilho($1);
+    : declaracao_tipada 
+    {
+        $$ = new std::vector<DeclaracaoVar*>();
+        $$->push_back($1);
     }
-    | lista_declaracao_parametros TK_PTVG declaracao_tipada {
+    | lista_declaracao_parametros TK_PTVG declaracao_tipada 
+    {
         $$ = $1;
-        $$->addFilho($3);
+        $$->push_back($3);
     }
     ;
 
 
 declaracao_funcao
-    : TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina {
-        $$ = new No(NO_SUBROTINA, $2);
-        if($3) $$->addFilho($3);
-        $$->addFilho($5);
-        $$->addFilho($7);
+    : TK_FUNCTION ID possivel_parametros_formais TK_DOISPT tipo TK_PTVG bloco_subrotina 
+    {
+        $$ = new DeclaracaoSub($2, *$3, $5, $7);
+        delete $3;
     }
     ;
 
 bloco_subrotina
-    : possivel_secao_variaveis comando_composto {
-        $$ = new No(NO_BLOCO);
-        if($1) $$->addFilho($1);
-        $$->addFilho($2);
+    : possivel_secao_variaveis comando_composto 
+    {
+        $$ = new BlocoSub();
+        if($1) $$->locais = *$1;
+        if($2) $$->comandos = *$2;
+        delete $1; delete $2;
     }
     ;
 
@@ -198,205 +254,228 @@ comando_composto
     ;
 
 lista_comandos
-    : comando {
-        $$ = new No(NO_BEGINEND, "BLOCO_COMANDOS");
-        $$->addFilho($1);
+    : comando 
+    {
+        $$ = new std::vector<Comando*>();
+        $$->push_back($1);
     }
-    | lista_comandos TK_PTVG comando {
+    | lista_comandos TK_PTVG comando 
+    {
         $$ = $1;
-        $$->addFilho($3);
+        $$->push_back($3);
     }
     ;
 
 comando
     : atribuicao { $$ = $1; }
-    | chamada_geral { $$ = $1; }
+    | chamada_geral {
+        ChamadaFuncao* call = (ChamadaFuncao*)$1;
+        
+        $$ = new ChamadaProcedimentoCmd(call->id);
+        ((ChamadaProcedimentoCmd*)$$)->args = call->args;
+        call->args.clear();
+        delete call; 
+    }
     | condicional { $$ = $1; }
     | repeticao { $$ = $1; }
     | leitura { $$ = $1; }
     | escrita { $$ = $1; }
-    | comando_composto { $$ = $1; }
+    | comando_composto 
+    {
+        $$ = new ComandoComposto(*$1); 
+        delete $1;
+    }
     ;
 
 atribuicao
-    : ID TK_ATRIB expressao {
-        $$ = new No(NO_ATRIB);
-        $$->addFilho(new No(NO_ID, $1));
-        $$->addFilho($3);
+    : ID TK_ATRIB expressao 
+    {
+        $$ = new AtribuicaoCmd($1, $3);
     }
     ;
 
 
 condicional
-    : TK_IF expressao TK_THEN comando {
-        $$ = new No(NO_IF);
-        $$->addFilho($2);
-        $$->addFilho($4);
+    : TK_IF expressao TK_THEN comando 
+    {
+        $$ = new IfCmd($2, $4, NULL);
     }
-    | TK_IF expressao TK_THEN comando TK_ELSE comando {
-        $$ = new No(NO_IF);
-        $$->addFilho($2);
-        $$->addFilho($4);
-        $$->addFilho($6);
+    | TK_IF expressao TK_THEN comando TK_ELSE comando 
+    {
+        $$ = new IfCmd($2, $4, $6);
     }
     ;
 
 repeticao 
-    : TK_WHILE expressao TK_DO comando {
-        $$ = new No(NO_WHILE);
-        $$->addFilho($2);
-        $$->addFilho($4);
+    : TK_WHILE expressao TK_DO comando 
+    {
+        $$ = new WhileCmd($2, $4);
     }
     ;
 
 leitura
-    : TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR {
-        $$ = new No(NO_READ);
-        $$->addFilho($3);
+    : TK_READ TK_ABREPAR lista_identificadores TK_FECHAPAR 
+    {
+        $$ = new LeituraCmd(*$3);
+        delete $3;
     }
     ;
 
 escrita
-    : TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR {
-        $$ = new No(NO_WRITE);
-        $$->addFilho($3);
+    : TK_WRITE TK_ABREPAR lista_expressoes_nao_vazia TK_FECHAPAR 
+    {
+        $$ = new EscritaCmd();
+        ((EscritaCmd*)$$)->exprs = *$3;
+        delete $3;
     }
     ;
 
 lista_expressoes_nao_vazia
-    : expressao {
-        $$ = new No(NO_PARAM_LIST, "LISTA_EXP");
-        $$->addFilho($1);
+    : expressao 
+    {
+        $$ = new std::vector<Expressao*>();
+        $$->push_back($1);
     }
-    | lista_expressoes_nao_vazia TK_VG expressao {
+    | lista_expressoes_nao_vazia TK_VG expressao 
+    {
         $$ = $1;
-        $$->addFilho($3);
+        $$->push_back($3);
     }
     ;
 
 lista_expressoes
-    : /* nada */ { $$ = NULL; }
+    : /* vazio */ { $$ = new std::vector<Expressao*>(); }
     | lista_expressoes_nao_vazia { $$ = $1; }
     ;
 
 expressao
     : expressao_simples { $$ = $1; }
-    | expressao_simples relacao expressao_simples {
-        $$ = $2;
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | expressao_simples relacao expressao_simples 
+    {
+        $$ = new ExpressaoBinaria($2, $1, $3);
     }
     ;
 
 relacao
-    : TK_IGUAL { $$ = new No(NO_OP_BINARIA, "="); }
-    | TK_DIF { $$ = new No(NO_OP_BINARIA, "<>"); }
-    | TK_MENOR { $$ = new No(NO_OP_BINARIA, "<"); }
-    | TK_MENOR_IG { $$ = new No(NO_OP_BINARIA, "<="); }
-    | TK_MAIOR { $$ = new No(NO_OP_BINARIA, ">"); }
-    | TK_MAIOR_IG { $$ = new No(NO_OP_BINARIA, ">="); }
+    : TK_IGUAL      { $$ = OperadorBinario::Equal; }
+    | TK_DIF        { $$ = OperadorBinario::NotEqual; }
+    | TK_MENOR      { $$ = OperadorBinario::Less; }
+    | TK_MENOR_IG   { $$ = OperadorBinario::LessEq; }
+    | TK_MAIOR      { $$ = OperadorBinario::Greater; }
+    | TK_MAIOR_IG   { $$ = OperadorBinario::GreaterEq; }
     ;
 
 expressao_simples
     : termo { $$ = $1; }
-    | TK_ADD termo {
-        $$ = $2; 
+    | TK_ADD termo { $$ = $2; /* Unario positivo eh ignorado ou tratado */ }
+    | TK_SUB termo 
+    { 
+        $$ = new ExpressaoUnaria(OperadorUnario::Negativo, $2);
     }
-    | TK_SUB termo { 
-        $$ = new No(NO_OP_UNARIA, "-");
-        $$->addFilho($2);
+    | expressao_simples TK_ADD termo 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::Add, $1, $3);
     }
-    | expressao_simples TK_ADD termo {
-        $$ = new No(NO_OP_BINARIA, "+");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | expressao_simples TK_SUB termo 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::Sub, $1, $3);
     }
-    | expressao_simples TK_SUB termo {
-        $$ = new No(NO_OP_BINARIA, "-");
-        $$->addFilho($1);
-        $$->addFilho($3);
-    }
-    | expressao_simples TK_OR termo {
-        $$ = new No(NO_OP_BINARIA, "or");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | expressao_simples TK_OR termo 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::Or, $1, $3);
     }
     ;
 
 termo
     : fator { $$ = $1; }
-    | termo TK_MUL fator {
-        $$ = new No(NO_OP_BINARIA, "*");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | termo TK_MUL fator 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::Mul, $1, $3);
     }
-    | termo TK_DIV fator {
-        $$ = new No(NO_OP_BINARIA, "div");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | termo TK_DIV fator 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::Div, $1, $3);
     }
-    | termo TK_AND fator {
-        $$ = new No(NO_OP_BINARIA, "and");
-        $$->addFilho($1);
-        $$->addFilho($3);
+    | termo TK_AND fator 
+    {
+        $$ = new ExpressaoBinaria(OperadorBinario::And, $1, $3);
     }
     ;
 
 fator
     : variavel { $$ = $1; }
-    | NUM { $$ = new No(NO_INT, std::to_string($1)); }
+    | NUM { $$ = new IntConstExpr($1); }
     | logico { $$ = $1; }
     | chamada_geral { $$ = $1; }
-    | TK_NOT fator {
-        $$ = new No(NO_OP_UNARIA, "not");
-        $$->addFilho($2);
+    | TK_NOT fator 
+    {
+        $$ = new ExpressaoUnaria(OperadorUnario::Not, $2);
     }
     | TK_ABREPAR expressao TK_FECHAPAR { $$ = $2; }
     ;
 
 variavel
-    : ID { $$ = new No(NO_ID, $1); }
+    : ID { $$ = new VarExpr($1); }
     ;
 
 logico
-    : TK_FALSE { $$ = new No(NO_BOOL, "false"); }
-    | TK_TRUE { $$ = new No(NO_BOOL, "true"); } 
+    : TK_FALSE { $$ = new BoolConstExpr(ValorBool::False); }
+    | TK_TRUE  { $$ = new BoolConstExpr(ValorBool::True); } 
     ;
 
 chamada_geral
-    : ID TK_ABREPAR lista_expressoes TK_FECHAPAR {
-        $$ = new No(NO_CHAMADA, $1);
-        if($3) $$->addFilho($3);
+    : ID TK_ABREPAR lista_expressoes TK_FECHAPAR 
+    {
+        ChamadaFuncao* call = new ChamadaFuncao($1);
+        call->args = *$3;
+        delete $3;
+        $$ = call;
     }
     ;
 
 
 %%
 
-/* Função de tratamento de erro */
 void yyerror(const char *s) {
-    fprintf(stderr, "ERRO SINTÁTICO na linha %d: %s (próximo de '%s')\n", yylineno, s, yytext);
+    fprintf(stderr, "Erro Sintatico na linha %d: %s (próximo de '%s')\n", yylineno, s, yytext);
 }
 
-/* Função principal */
 int main(int argc, char **argv) {
-    if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (!file) {
-            fprintf(stderr, "Erro ao abrir arquivo %s\n", argv[1]);
+    if (argc < 3) {
+        fprintf(stderr, "Uso: ./rascal <arquivo_entrada.ras> <arquivo_saida.mepa>\n");
+        return 1;
+    }
+
+    yyin = fopen(argv[1], "r");
+    if (!yyin) {
+        perror(argv[1]);
+        return 1;
+    }
+
+    yyparse();
+    
+    if (yyin) fclose(yyin);
+
+    if (raiz) {
+        AnalisadorSemantico semantico;
+        if (semantico.analyze(raiz)) {
+            if (freopen(argv[2], "w", stdout) == NULL) {
+                perror(argv[2]);
+                delete raiz;
+                return 1;
+            }
+
+            GeradorCodigo gerador;
+            gerador.gerar(raiz);
+            
+            fclose(stdout);
+
+        } else {
+            std::cerr << "Erros semanticos encontrados. Compilacao abortada." << std::endl;
+            delete raiz;
             return 1;
         }
-        extern FILE* yyin;
-        yyin = file;
+        delete raiz;
     }
-    yyparse();
-
-    /* Se a raiz foi gerada sem erros, imprime a arvere */
-    if (raiz) {
-        std::cout << "--- AST ---" << std::endl;
-        raiz->print();
-        delete raiz; 
-    }
-
     return 0;
 }

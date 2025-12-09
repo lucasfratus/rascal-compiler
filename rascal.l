@@ -1,11 +1,9 @@
-/* opções do flex */
 %option noyywrap yylineno
 
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* Inclui os tokens definidos no Bison */
 #include "rascal.tab.h" 
 %}
 

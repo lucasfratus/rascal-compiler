@@ -45,11 +45,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 20 "rascal.y"
+#line 25 "rascal.y"
 
-    #include "ast.h"
+    #include "ast.hpp"
+    #include <vector>
 
-#line 53 "rascal.tab.h"
+#line 54 "rascal.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -107,13 +108,32 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 24 "rascal.y"
+#line 30 "rascal.y"
 
     int ival;
     char *sval;
-    No* node;
 
-#line 117 "rascal.tab.h"
+    Programa* ptr_programa;
+    Bloco* ptr_bloco;
+    BlocoSub* ptr_bloco_sub;
+    
+    DeclaracaoVar* ptr_decl_var;
+    std::vector<DeclaracaoVar*>* vec_decl_var;
+    
+    DeclaracaoSub* ptr_decl_sub;
+    std::vector<DeclaracaoSub*>* vec_decl_sub;
+    
+    Comando* ptr_comando;
+    std::vector<Comando*>* vec_comando;
+    
+    Expressao* ptr_expr;
+    std::vector<Expressao*>* vec_expr;
+    std::vector<std::string>* vec_str;
+    
+    TipoVar tipo_var;
+    OperadorBinario op_bin;
+
+#line 137 "rascal.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

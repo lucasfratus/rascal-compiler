@@ -539,15 +539,13 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "rascal.l"
-/* opções do flex */
-#line 5 "rascal.l"
+#line 4 "rascal.l"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* Inclui os tokens definidos no Bison */
 #include "rascal.tab.h" 
-#line 550 "lex.yy.c"
-#line 551 "lex.yy.c"
+#line 548 "lex.yy.c"
+#line 549 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -764,10 +762,10 @@ YY_DECL
 		}
 
 	{
-#line 16 "rascal.l"
+#line 14 "rascal.l"
 
 
-#line 771 "lex.yy.c"
+#line 769 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -836,216 +834,216 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 18 "rascal.l"
+#line 16 "rascal.l"
 { return TK_PROGRAM; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "rascal.l"
+#line 17 "rascal.l"
 { return TK_PROCEDURE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 20 "rascal.l"
+#line 18 "rascal.l"
 { return TK_FUNCTION; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "rascal.l"
+#line 19 "rascal.l"
 { return TK_VAR; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 22 "rascal.l"
+#line 20 "rascal.l"
 { return TK_BEGIN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 23 "rascal.l"
+#line 21 "rascal.l"
 { return TK_END; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 24 "rascal.l"
+#line 22 "rascal.l"
 { return TK_INTEGER; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 25 "rascal.l"
+#line 23 "rascal.l"
 { return TK_BOOLEAN; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "rascal.l"
+#line 24 "rascal.l"
 { return TK_FALSE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 27 "rascal.l"
+#line 25 "rascal.l"
 { return TK_TRUE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 28 "rascal.l"
+#line 26 "rascal.l"
 { return TK_WHILE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 29 "rascal.l"
+#line 27 "rascal.l"
 { return TK_DO; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 30 "rascal.l"
+#line 28 "rascal.l"
 { return TK_IF; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 31 "rascal.l"
+#line 29 "rascal.l"
 { return TK_THEN; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 32 "rascal.l"
+#line 30 "rascal.l"
 { return TK_ELSE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 33 "rascal.l"
+#line 31 "rascal.l"
 { return TK_READ; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 34 "rascal.l"
+#line 32 "rascal.l"
 { return TK_WRITE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 35 "rascal.l"
+#line 33 "rascal.l"
 { return TK_AND; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 36 "rascal.l"
+#line 34 "rascal.l"
 { return TK_OR; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 37 "rascal.l"
+#line 35 "rascal.l"
 { return TK_NOT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 38 "rascal.l"
+#line 36 "rascal.l"
 { return TK_DIV; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "rascal.l"
+#line 38 "rascal.l"
 { yylval.ival = atoi(yytext); return NUM; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "rascal.l"
+#line 39 "rascal.l"
 { yylval.sval = strdup(yytext); return ID; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 43 "rascal.l"
+#line 41 "rascal.l"
 { return TK_ABREPAR; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 44 "rascal.l"
+#line 42 "rascal.l"
 { return TK_FECHAPAR; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 45 "rascal.l"
+#line 43 "rascal.l"
 { return TK_PTVG; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 46 "rascal.l"
+#line 44 "rascal.l"
 { return TK_DOISPT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 47 "rascal.l"
+#line 45 "rascal.l"
 { return TK_PT; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 48 "rascal.l"
+#line 46 "rascal.l"
 { return TK_IGUAL; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 49 "rascal.l"
+#line 47 "rascal.l"
 { return TK_DIF; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 50 "rascal.l"
+#line 48 "rascal.l"
 { return TK_MENOR; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 51 "rascal.l"
+#line 49 "rascal.l"
 { return TK_MENOR_IG; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 52 "rascal.l"
+#line 50 "rascal.l"
 { return TK_MAIOR; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 53 "rascal.l"
+#line 51 "rascal.l"
 { return TK_MAIOR_IG; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 54 "rascal.l"
+#line 52 "rascal.l"
 { return TK_ADD; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 55 "rascal.l"
+#line 53 "rascal.l"
 { return TK_SUB; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 56 "rascal.l"
+#line 54 "rascal.l"
 { return TK_MUL; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 57 "rascal.l"
+#line 55 "rascal.l"
 { return TK_VG; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 58 "rascal.l"
+#line 56 "rascal.l"
 { return TK_ATRIB; }
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 60 "rascal.l"
+#line 58 "rascal.l"
 { /* ignora */ }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 62 "rascal.l"
+#line 60 "rascal.l"
 { printf("ERRO LÉXICO na linha %d: símbolo ilegal %c\n", yylineno, yytext[0]); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 64 "rascal.l"
+#line 62 "rascal.l"
 ECHO;
 	YY_BREAK
-#line 1049 "lex.yy.c"
+#line 1047 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2062,5 +2060,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 64 "rascal.l"
+#line 62 "rascal.l"
 
