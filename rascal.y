@@ -21,6 +21,7 @@ int yylex(void);
 Programa* raiz = NULL;
 
 %}
+%define parse.error verbose
 
 %code requires {
     #include "ast.hpp"
@@ -433,12 +434,12 @@ chamada_geral
     }
     ;
 
-
 %%
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Erro Sintatico na linha %d: %s (próximo de '%s')\n", yylineno, s, yytext);
+void yyerror(const char *s){
+    printf("Erro Sintático na linha %d: %s\n", yylineno, s);
 }
+
 
 int main(int argc, char **argv) {
     if (argc < 3) {

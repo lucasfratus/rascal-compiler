@@ -1,4 +1,4 @@
-%option noyywrap yylineno
+%option noyywrap yylineno nounput noinput
 
 %{
 #include <stdio.h>
@@ -8,17 +8,17 @@
 %}
 
 ESPACO  [ \t\r\n]+
-ID      [a-zA-Z][a-zA-Z0-9_]*
 NUM     [0-9]+[0-9]*
+ID      [a-zA-Z][a-zA-Z0-9_]*
 
 %%
 
 "program" { return TK_PROGRAM; }
+"begin" { return TK_BEGIN; }
+"end" { return TK_END; }
 "procedure" { return TK_PROCEDURE; }
 "function" { return TK_FUNCTION; }
 "var" { return TK_VAR; }
-"begin" { return TK_BEGIN; }
-"end" { return TK_END; }
 "integer" { return TK_INTEGER; }
 "boolean" { return TK_BOOLEAN; }
 "false" { return TK_FALSE; }

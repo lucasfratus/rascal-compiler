@@ -1,6 +1,6 @@
 #include <stdio.h>
-//#include "y.tab.h" // só se você tiver tokens definidos em um .y
-// mas se estiver testando sozinho, pode comentar isso.
+//#include "y.tab.h" 
+
 
 extern int yylex();
 extern char *yytext;
