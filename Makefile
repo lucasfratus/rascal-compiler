@@ -3,17 +3,17 @@ CXXFLAGS = -std=c++17 -Wall
 
 all: rascal
 
-rascal: rascal.tab.o lex.yy.o ast.o semantico.o gerador.o symbols.o
-	$(CXX) $(CXXFLAGS) -o rascal rascal.tab.o lex.yy.o ast.o semantico.o gerador.o symbols.o -lfl
+rascal: parser.tab.o lex.yy.o ast.o semantico.o gerador.o symbols.o
+	$(CXX) $(CXXFLAGS) -o rascal parser.tab.o lex.yy.o ast.o semantico.o gerador.o symbols.o -lfl
 
-rascal.tab.c rascal.tab.h: rascal.y
-	bison -d -v rascal.y
+parser.tab.c parser.tab.h: parser.y
+	bison -d -v parser.y
 
-lex.yy.c: rascal.l
-	flex rascal.l
+lex.yy.c: lexer.l
+	flex lexer.l
 
-rascal.tab.o: rascal.tab.c ast.hpp semantico.hpp gerador.hpp symbols.hpp
-	$(CXX) $(CXXFLAGS) -c rascal.tab.c
+parser.tab.o: parser.tab.c ast.hpp semantico.hpp gerador.hpp symbols.hpp
+	$(CXX) $(CXXFLAGS) -c parser.tab.c
 
 lex.yy.o: lex.yy.c ast.hpp
 	$(CXX) $(CXXFLAGS) -c lex.yy.c
@@ -31,4 +31,4 @@ symbols.o: symbols.cpp symbols.hpp
 	$(CXX) $(CXXFLAGS) -c symbols.cpp
 
 clean:
-	rm -f rascal *.o rascal.tab.c rascal.tab.h lex.yy.c rascal.output
+	rm -f rascal *.o parser.tab.c parser.tab.h lex.yy.c parser.output

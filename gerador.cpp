@@ -186,7 +186,7 @@ void GeradorCodigo::visitaAtribuicao(AtribuicaoCmd* c) {
 }
 
 void GeradorCodigo::visitaIf(IfCmd* c) {
-    // CASO 1: IF sem ELSE
+    // IF sem ELSE
     if (c->elseCmd == nullptr) {
         std::string label_fim = newLabel();
 
